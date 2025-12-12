@@ -9,6 +9,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Library QR Code / Barcode Scanner -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     
     <!-- Fonts: Plus Jakarta Sans (Modern & Professional) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -58,7 +60,6 @@
 
         /* Login Background Image - Computer Store Theme */
         .login-bg-image {
-            /* Menggunakan gambar toko komputer/elektronik */
             background-image: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.8)), url('https://images.unsplash.com/photo-1593640408182-31c70c8268f5?q=80&w=1470&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
@@ -324,7 +325,7 @@
                         <span class="text-sm bg-white px-3 py-1 rounded-full border border-slate-200 shadow-sm text-slate-500" id="currentDate"></span>
                     </div>
 
-                    <!-- Stats Cards: UPDATED LAYOUT -->
+                    <!-- Stats Cards -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <!-- Card 1: Hari Ini -->
                         <div class="card p-6 border-l-4 border-primary-500 relative overflow-hidden group">
@@ -433,7 +434,11 @@
                     <div class="card p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="relative">
                             <i data-lucide="search" class="absolute left-3 top-3 w-5 h-5 text-slate-400"></i>
-                            <input type="search" id="inventorySearch" placeholder="Cari Nama Barang atau Scan Barcode..." class="form-input w-full pl-10 pr-4 py-2.5 rounded-lg bg-slate-50">
+                            <input type="search" id="inventorySearch" placeholder="Cari Nama Barang atau Scan Barcode..." class="form-input w-full pl-10 pr-10 py-2.5 rounded-lg bg-slate-50">
+                            <!-- Tombol Scan Kamera untuk Search Data Barang -->
+                            <button onclick="startScanner('inventorySearch')" class="absolute right-2 top-2 p-1 bg-slate-200 hover:bg-slate-300 rounded text-slate-600" title="Scan dengan Kamera HP">
+                                <i data-lucide="camera" class="w-5 h-5"></i>
+                            </button>
                         </div>
                         <div class="relative">
                             <i data-lucide="filter" class="absolute left-3 top-3 w-5 h-5 text-slate-400"></i>
@@ -483,11 +488,15 @@
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-700 mb-2">Pilih Barang</label>
                                     <div class="relative mb-2">
-                                        <i data-lucide="search" class="absolute left-3 top-3 w-5 h-5 text-slate-400"></i>
-                                        <input type="search" id="posSearch" placeholder="Ketik nama barang untuk memfilter..." class="form-input w-full pl-10 pr-4 py-2.5 rounded-lg bg-slate-50 text-sm">
+                                        <i data-lucide="scan-barcode" class="absolute left-3 top-3 w-5 h-5 text-slate-400"></i>
+                                        <input type="search" id="posSearch" placeholder="Ketik nama atau Scan Barcode (Tekan Enter)..." class="form-input w-full pl-10 pr-10 py-2.5 rounded-lg bg-slate-50 text-sm">
+                                        <!-- Tombol Scan Kamera untuk POS -->
+                                        <button type="button" onclick="startScanner('posSearch')" class="absolute right-2 top-2 p-1 bg-slate-200 hover:bg-slate-300 rounded text-slate-600" title="Scan dengan Kamera HP">
+                                            <i data-lucide="camera" class="w-5 h-5"></i>
+                                        </button>
                                     </div>
                                     <select id="posItemSelect" class="form-input w-full p-2.5 rounded-lg bg-white h-48 border border-slate-200 focus:ring-2 focus:ring-primary-500" size="5"></select>
-                                    <p class="text-xs text-slate-400 mt-1">*Klik barang di atas untuk memilih</p>
+                                    <p class="text-xs text-slate-400 mt-1">*Klik barang di atas untuk memilih atau Scan Barcode di kolom pencarian.</p>
                                 </div>
                                 
                                 <div>
@@ -667,6 +676,20 @@
         </div>
     </div>
 
+    <!-- MODAL: Scanner Overlay -->
+    <div id="scannerModal" class="hidden fixed inset-0 bg-slate-900/90 z-[70] flex flex-col items-center justify-center p-4">
+        <div class="relative w-full max-w-sm bg-white rounded-xl overflow-hidden shadow-2xl">
+            <div class="p-4 bg-slate-800 text-white flex justify-between items-center">
+                <h3 class="font-bold">Scan Barcode</h3>
+                <button id="closeScannerBtn" class="p-1 hover:bg-slate-700 rounded"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div id="reader" class="w-full bg-black min-h-[300px]"></div>
+            <div class="p-4 bg-white text-center text-sm text-slate-500">
+                Arahkan kamera ke barcode barang.
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL: Inventory Form -->
     <div id="inventoryModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 overflow-y-auto h-full w-full flex items-center justify-center p-4">
         <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
@@ -677,14 +700,18 @@
                 </button>
             </div>
             <form id="inventoryForm" class="p-6 space-y-4">
-                <!-- ID/Barcode Input - NOW VISIBLE -->
+                <!-- ID/Barcode Input -->
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">ID Barang / Barcode</label>
                     <div class="relative">
-                        <input type="text" id="itemCode" class="form-input w-full px-4 py-2 rounded-lg bg-slate-50 focus:bg-white" placeholder="Scan Barcode atau ketik ID...">
-                        <i data-lucide="scan-barcode" class="absolute right-3 top-2.5 w-5 h-5 text-slate-400"></i>
+                        <!-- Removed bg-slate-50 focus:bg-white to default white, editable -->
+                        <input type="text" id="itemCode" class="form-input w-full px-4 py-2 pr-10 rounded-lg" placeholder="Scan Barcode atau ketik ID...">
+                        <!-- Tombol Scan Kamera untuk Form Input -->
+                        <button type="button" onclick="startScanner('itemCode')" class="absolute right-2 top-2 p-1 bg-slate-100 hover:bg-slate-200 rounded text-slate-600" title="Scan dengan Kamera HP">
+                            <i data-lucide="camera" class="w-5 h-5"></i>
+                        </button>
                     </div>
-                    <p class="text-[10px] text-slate-400 mt-1">*Biarkan kosong jika ingin sistem generate otomatis (jika didukung).</p>
+                    <p class="text-[10px] text-slate-400 mt-1">*ID dapat diubah. Pastikan unik.</p>
                 </div>
 
                 <div>
@@ -806,6 +833,7 @@
         let fullSalesData = []; 
         let displayedSalesData = [];
         let categories = [];
+        let html5QrcodeScanner = null; // Scanner State
 
         // --- All DOM elements that need to be accessed ---
         const views = {
@@ -841,6 +869,71 @@
 
         // --- Date Display ---
         document.getElementById('currentDate').textContent = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        // --- SCANNER LOGIC ---
+        function startScanner(targetInputId) {
+            const scannerModal = document.getElementById('scannerModal');
+            scannerModal.classList.remove('hidden');
+
+            if (html5QrcodeScanner) {
+                // If scanner already instance exists, clear it first
+                html5QrcodeScanner.clear().then(() => {
+                    initScanner(targetInputId);
+                }).catch(err => {
+                    console.error("Failed to clear scanner", err);
+                });
+            } else {
+                initScanner(targetInputId);
+            }
+        }
+
+        function initScanner(targetInputId) {
+            html5QrcodeScanner = new Html5QrcodeScanner(
+                "reader", { fps: 10, qrbox: 250 }
+            );
+
+            html5QrcodeScanner.render((decodedText, decodedResult) => {
+                // Handle on success
+                console.log(`Scan result: ${decodedText}`, decodedResult);
+                
+                // Stop scanning
+                html5QrcodeScanner.clear().then(() => {
+                    document.getElementById('scannerModal').classList.add('hidden');
+                    
+                    // Fill input
+                    const inputField = document.getElementById(targetInputId);
+                    if (inputField) {
+                        inputField.value = decodedText;
+                        
+                        // Trigger events based on which input was scanned
+                        if (targetInputId === 'posSearch') {
+                            // Trigger POS enter logic
+                            const event = new KeyboardEvent('keydown', { key: 'Enter' });
+                            inputField.dispatchEvent(event);
+                        } else if (targetInputId === 'inventorySearch') {
+                            // Trigger search
+                            const event = new Event('input');
+                            inputField.dispatchEvent(event);
+                        }
+                    }
+                }).catch((err) => {
+                    console.error("Failed to clear scanner", err);
+                });
+
+            }, (errorMessage) => {
+                // parse error, ignore it.
+            });
+        }
+
+        document.getElementById('closeScannerBtn').addEventListener('click', () => {
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.clear().then(() => {
+                    document.getElementById('scannerModal').classList.add('hidden');
+                }).catch(err => console.error(err));
+            } else {
+                document.getElementById('scannerModal').classList.add('hidden');
+            }
+        });
 
         // --- SETTINGS MANAGEMENT ---
         function loadSettings() {
@@ -1304,8 +1397,10 @@
                 modalTitle.textContent = 'Edit Barang';
                 // Fill visible inputs
                 document.getElementById('itemCode').value = item.kode_barang;
-                document.getElementById('itemCode').readOnly = true; // Typically ID shouldn't change on edit, or remove if you want editable
-                document.getElementById('itemCode').classList.add('bg-slate-100'); // Visual cue for readonly
+                
+                // --- UPDATE: ID/Barcode is now Editable as requested ---
+                document.getElementById('itemCode').readOnly = false; // Now editable
+                // Removed bg-slate-100 class addition for cleaner look
 
                 document.getElementById('itemName').value = item.nama_barang;
                 document.getElementById('itemPrice').value = item.harga;
@@ -1318,7 +1413,6 @@
                 modalTitle.textContent = 'Tambah Barang Baru';
                 document.getElementById('itemCode').value = '';
                 document.getElementById('itemCode').readOnly = false;
-                document.getElementById('itemCode').classList.remove('bg-slate-100');
             }
             document.getElementById('inventoryModal').classList.remove('hidden');
         }
@@ -1334,12 +1428,13 @@
                 expired_date: document.getElementById('itemExpiredDate').value
             };
             
-            // Logic to determine add vs update (assuming if ID exists & was readonly it's update, but API might handle upsert)
-            // The original logic relied on hidden field. Now we check if we are in 'edit mode' contextually or just let backend handle upsert.
-            // Assuming backend handles "updateInventory" based on existing key. 
-            // Warning: If user manually changes ID in add mode to an existing one, it might overwrite.
-            const isEditMode = document.getElementById('itemCode').readOnly; 
-            const action = isEditMode ? 'updateInventory' : 'addInventory';
+            // Note: Since ID is editable, determining 'update' vs 'add' strictly by readOnly attribute is less reliable 
+            // if the user edits the ID. However, assuming simple usage for now.
+            // If the user opens an existing item (Modal Title = 'Edit Barang'), we treat it as update.
+            // But API relies on finding the ID. If user changed ID, update might fail or create duplicate on backend depending on script logic.
+            // For now, we proceed as normal.
+            const modalTitle = document.getElementById('modalTitle').textContent;
+            const action = modalTitle === 'Edit Barang' ? 'updateInventory' : 'addInventory';
             
             const result = await apiRequest(action, item);
             if (result) {
@@ -1364,7 +1459,10 @@
             // No option placeholder needed for size=5 listbox, it's cleaner without
             
             const filteredInventory = fullInventoryData.filter(item => 
-                item.stok > 0 && item.nama_barang.toLowerCase().includes(searchTerm)
+                item.stok > 0 && (
+                    item.nama_barang.toLowerCase().includes(searchTerm) || 
+                    (item.kode_barang && String(item.kode_barang).toLowerCase().includes(searchTerm))
+                )
             );
             
             filteredInventory.forEach(item => {
@@ -1379,6 +1477,31 @@
             });
         }
 
+        // Helper: Add Item Object to Cart
+        function addItemToCart(item, quantityToAdd) {
+            const maxStock = parseInt(item.stok);
+            const existingItem = cart.find(cartItem => cartItem.kode_barang === item.kode_barang);
+            
+            if (existingItem) { 
+                if(existingItem.qty + quantityToAdd > maxStock) { 
+                    alert(`Stok tidak mencukupi. Anda sudah punya ${existingItem.qty} di keranjang. Stok tersisa: ${maxStock}`); return; 
+                } 
+                existingItem.qty += quantityToAdd; 
+            } else { 
+                if(quantityToAdd > maxStock) {
+                     alert(`Stok tidak mencukupi. Stok tersisa: ${maxStock}`); return;
+                }
+                // Construct cart item object
+                cart.push({
+                    kode_barang: item.kode_barang,
+                    nama_barang: item.nama_barang,
+                    harga: parseFloat(item.harga),
+                    qty: quantityToAdd
+                }); 
+            }
+            updateCart();
+        }
+
         const handleAddToCart = (e) => {
             e.preventDefault();
             const posItemSelect = document.getElementById('posItemSelect');
@@ -1390,23 +1513,17 @@
             }
             
             const qty = parseInt(document.getElementById('posQuantity').value);
-            const maxStock = parseInt(selectedOption.dataset.stock);
+            // Construct item object from selection data
+            const item = {
+                kode_barang: selectedOption.value,
+                nama_barang: selectedOption.dataset.name,
+                harga: selectedOption.dataset.price,
+                stok: selectedOption.dataset.stock
+            };
+
+            addItemToCart(item, qty);
             
-            if (qty > maxStock) { alert(`Stok tidak mencukupi. Stok tersisa: ${maxStock}`); return; }
-            
-            const item = { kode_barang: selectedOption.value, nama_barang: selectedOption.dataset.name, harga: parseFloat(selectedOption.dataset.price), qty: qty };
-            const existingItem = cart.find(cartItem => cartItem.kode_barang === item.kode_barang);
-            
-            if (existingItem) { 
-                if(existingItem.qty + item.qty > maxStock) { 
-                    alert(`Stok tidak mencukupi. Anda sudah punya ${existingItem.qty} di keranjang. Stok tersisa: ${maxStock}`); return; 
-                } 
-                existingItem.qty += item.qty; 
-            } else { 
-                cart.push(item); 
-            }
-            updateCart(); 
-            // Don't reset form completely to allow rapid entry, just reset qty
+            // Reset quantity to 1 for next item
             document.getElementById('posQuantity').value = 1;
         };
         
@@ -1613,7 +1730,31 @@
         
         inventorySearch.addEventListener('input', renderInventoryTable);
         inventoryFilter.addEventListener('change', renderInventoryTable);
+        
+        // POS Search Logic (Including Barcode Scan)
         posSearch.addEventListener('input', renderPosOptions);
+        
+        // Listener for Barcode Scanner (Simulated by 'Enter' key press in search box)
+        posSearch.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // Prevent form submission if any
+                const query = posSearch.value.trim().toLowerCase();
+                if (!query) return;
+
+                // Find exact match for barcode
+                const exactMatch = fullInventoryData.find(item => 
+                    item.kode_barang && String(item.kode_barang).toLowerCase() === query
+                );
+
+                if (exactMatch) {
+                    // Add to cart directly
+                    addItemToCart(exactMatch, 1);
+                    // Clear search box for next scan
+                    posSearch.value = '';
+                    renderPosOptions(); // Reset list
+                }
+            }
+        });
 
         logoUpload.addEventListener('change', handleLogoUpload);
         saveSettingsBtn.addEventListener('click', saveSettings);
