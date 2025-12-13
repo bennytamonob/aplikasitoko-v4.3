@@ -182,7 +182,13 @@
                 width: 100% !important; max-width: 100% !important;
                 margin: 0 !important; padding: 0 !important;
             }
+            /* Reset modal style for print */
             .no-print { display: none !important; }
+            /* Ensure background colors print */
+            #invoice-print-area {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
         }
     </style>
     <style id="print-style-rules"></style>
@@ -789,50 +795,71 @@
             </div>
 
             <!-- Print Area -->
-            <div id="invoice-print-area" class="p-8 bg-white text-slate-900">
-                <div class="text-center mb-8 border-b-2 border-slate-900 pb-6">
-                    <img id="invoiceLogo" src="#" alt="Logo" class="hidden h-16 mx-auto mb-3 object-contain"/>
-                    <h2 class="text-2xl font-bold uppercase tracking-wider">Invoice</h2>
-                    <p class="text-lg font-semibold">JIREH CREATIONS</p>
-                    <p class="text-xs text-slate-500 mt-1">Terima kasih atas kunjungan Anda</p>
+            <div id="invoice-print-area" class="p-8 bg-white text-slate-900 font-sans">
+                <!-- Header -->
+                <div class="text-center mb-6">
+                    <div class="flex justify-center mb-3">
+                         <img id="invoiceLogo" src="#" alt="Logo" class="hidden h-20 object-contain"/>
+                    </div>
+                    <h1 class="text-3xl font-bold text-slate-800 tracking-tight">JIREH CREATIONS</h1>
+                    <p class="text-sm text-slate-500 font-medium uppercase tracking-wide mt-1">Sistem Penjualan & Stok</p>
+                    <div class="w-full border-b-2 border-dashed border-slate-300 my-4"></div>
                 </div>
 
-                <div class="flex justify-between mb-6 text-sm font-mono">
+                <!-- Meta Info -->
+                <div class="flex justify-between items-end mb-6 text-sm">
                     <div>
-                        <p class="text-slate-500 text-xs uppercase">No. Transaksi</p>
-                        <p id="invoiceId" class="font-bold"></p>
+                        <span class="block text-xs text-slate-400 uppercase font-semibold">No. Transaksi</span>
+                        <span id="invoiceId" class="font-mono font-bold text-slate-700 text-base"></span>
                     </div>
                     <div class="text-right">
-                        <p class="text-slate-500 text-xs uppercase">Tanggal</p>
-                        <p id="invoiceDate" class="font-bold"></p>
+                        <span class="block text-xs text-slate-400 uppercase font-semibold">Tanggal</span>
+                        <span id="invoiceDate" class="font-mono font-bold text-slate-700"></span>
                     </div>
                 </div>
 
-                <table class="w-full text-sm mb-6">
-                    <thead>
-                        <tr class="border-b-2 border-slate-200 text-xs uppercase">
-                            <th class="py-2 text-left">Item</th>
-                            <th class="py-2 text-center">Qty</th>
-                            <th class="py-2 text-right">Harga</th>
-                            <th class="py-2 text-right">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody id="invoiceItems" class="font-mono text-slate-700">
-                        <!-- Items -->
-                    </tbody>
-                </table>
+                <!-- Table -->
+                <div class="mb-6">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-xs uppercase text-slate-500 border-b border-slate-200">
+                                <th class="py-2 text-left w-5/12">Item</th>
+                                <th class="py-2 text-center w-2/12">Qty</th>
+                                <th class="py-2 text-right w-2/12">Harga</th>
+                                <th class="py-2 text-right w-3/12">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoiceItems" class="text-slate-700 divide-y divide-dashed divide-slate-200 font-mono text-xs sm:text-sm">
+                            <!-- Items injected here -->
+                        </tbody>
+                    </table>
+                </div>
 
-                <div class="flex justify-end mb-8">
-                    <div class="w-1/2 text-right">
-                        <p class="text-slate-500 text-xs uppercase mb-1">Total Pembayaran</p>
-                        <p id="invoiceTotal" class="text-2xl font-bold text-slate-900"></p>
+                <!-- Totals -->
+                <div class="flex justify-end mb-6">
+                    <div class="w-full sm:w-2/3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-500 font-bold uppercase text-xs">Total Pembayaran</span>
+                            <span id="invoiceTotal" class="text-2xl font-bold text-primary-600"></span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="bg-slate-50 p-4 rounded border border-slate-100 text-xs text-slate-600 text-center">
-                    <p class="font-bold mb-1">Informasi Pembayaran:</p>
-                    <p>Bank BNI a.n. Gracia Hartiningrum</p>
-                    <p class="font-mono">973830784</p>
+                <!-- Footer -->
+                <div class="text-center space-y-4">
+                    <div class="p-3 rounded-lg border border-dashed border-slate-300 bg-slate-50 inline-block w-full">
+                        <p class="text-xs font-bold text-slate-700 mb-1 uppercase">Informasi Pembayaran</p>
+                        <p class="text-xs text-slate-600">Bank BNI a.n. Gracia Hartiningrum</p>
+                        <p class="text-sm font-mono font-bold text-slate-800 tracking-wider">973830784</p>
+                    </div>
+                    
+                    <div class="text-xs text-slate-400">
+                        <p>Terima kasih telah berbelanja di JIREH CREATIONS.</p>
+                        <p>Barang yang sudah dibeli tidak dapat ditukar/dikembalikan.</p>
+                    </div>
+                    <div class="text-[10px] text-slate-300 pt-4 font-mono">
+                        &copy; 2024 JIREH CREATIONS System
+                    </div>
                 </div>
             </div>
         </div>
@@ -1239,34 +1266,55 @@
         // --- Dashboard & Logic for New Stats ---
         async function loadDashboardData() {
             showView('dashboard');
-            const stockThreshold = localStorage.getItem('pos_stock_threshold') || 10;
-            const expiryThresholdDays = localStorage.getItem('pos_expiry_threshold') || 30;
+            
+            // Get Settings
+            const stockThreshold = parseInt(localStorage.getItem('pos_stock_threshold')) || 10;
+            const expiryThresholdDays = parseInt(localStorage.getItem('pos_expiry_threshold')) || 30;
 
-            // 1. Get standard dashboard data (Today's Sales, Inventory Count, Notifications)
-            const dashboardData = await apiRequest('getDashboardData', { stockThreshold, expiryThresholdDays });
+            // Fetch Data
+            // Ideally we get simple stats from dashboardData, but let's recalculate notifications locally
+            // to ensure settings work immediately without backend code changes.
+            
+            // Parallel fetch for speed
+            const [dashboardData, allSales, inventory] = await Promise.all([
+                apiRequest('getDashboardData'), // We can ignore params here if we do it locally
+                apiRequest('getSales'),
+                apiRequest('getInventory')
+            ]);
 
-            // 2. We need full sales history to calculate Week, Month, Year stats on client side
-            // because we cannot modify the backend script.
-            const allSales = await apiRequest('getSales');
-
-            if (dashboardData && allSales) {
-                // Standard Data
+            if (dashboardData && allSales && inventory) {
+                // Update Stats
                 document.getElementById('salesToday').textContent = formatCurrency(dashboardData.salesToday);
-                document.getElementById('inventoryCount').textContent = dashboardData.inventoryCount;
-                renderNotifications(dashboardData.lowStockItems, dashboardData.expiringItems);
+                document.getElementById('inventoryCount').textContent = inventory.length; // Use actual length from full inventory
+
+                // --- CLIENT-SIDE FILTERING FOR NOTIFICATIONS ---
+                // Filter Low Stock
+                const lowStockItems = inventory.filter(item => item.stok <= stockThreshold);
                 
-                // Advanced Calculation for Period Stats
+                // Filter Expiring Items
+                const today = new Date();
+                const warningDate = new Date();
+                warningDate.setDate(today.getDate() + expiryThresholdDays);
+                
+                const expiringItems = inventory.filter(item => {
+                    if (!item.expired_date) return false;
+                    const expDate = new Date(item.expired_date);
+                    return expDate <= warningDate && expDate >= today; // Expiring soon but not yet past (or include past if desired)
+                    // Usually notifications show what is about to expire. Items already expired might need different handling, but let's stick to "Approaching Expiry".
+                    // Let's allow <= warningDate. If it's already expired, it should definitely warn.
+                }).sort((a, b) => new Date(a.expired_date) - new Date(b.expired_date));
+
+                renderNotifications(lowStockItems, expiringItems);
+                
+                // Period Stats (Week, Month, Year)
                 const stats = calculatePeriodSales(allSales);
-                
-                // Update UI with new stats
-                // Note: We use the calculated 'Today' if preferred, or the server one. 
-                // Let's stick to server for 'Today' to be safe, but use our calc for others.
                 document.getElementById('salesWeek').textContent = formatCurrency(stats.totalWeek);
                 document.getElementById('salesMonth').textContent = formatCurrency(stats.totalMonth);
                 document.getElementById('salesYear').textContent = formatCurrency(stats.totalYear);
 
+                // Charts
                 renderSalesChart(dashboardData.last7DaysSales);
-                renderInventoryChart(dashboardData.inventory);
+                renderInventoryChart(inventory); // Use full inventory for chart
             }
         }
 
@@ -1699,7 +1747,7 @@
             invoiceItemsBody.innerHTML = '';
             items.forEach(item => {
                 const subtotal = item.qty * item.harga;
-                const row = `<tr class="border-b border-slate-100"><td class="py-2 text-left">${item.nama_barang}</td><td class="py-2 text-center">${item.qty}</td><td class="py-2 text-right">${formatCurrency(item.harga)}</td><td class="py-2 text-right font-medium">${formatCurrency(subtotal)}</td></tr>`;
+                const row = `<tr class="border-b border-dashed border-slate-200"><td class="py-2 text-left">${item.nama_barang}</td><td class="py-2 text-center">${item.qty}</td><td class="py-2 text-right">${formatCurrency(item.harga)}</td><td class="py-2 text-right font-medium">${formatCurrency(subtotal)}</td></tr>`;
                 invoiceItemsBody.insertAdjacentHTML('beforeend', row);
             });
             document.getElementById('invoiceTotal').textContent = formatCurrency(total);
