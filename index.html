@@ -616,15 +616,38 @@
                             </h3>
                             <div class="space-y-4 max-w-xl">
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-2">Logo Struk (PNG)</label>
-                                    <div class="flex items-center gap-4">
-                                        <label class="cursor-pointer px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 transition shadow-sm">
-                                            Pilih File
-                                            <input type="file" id="logoUpload" accept="image/png" class="hidden">
-                                        </label>
-                                        <div class="h-16 w-16 bg-slate-100 rounded-lg flex items-center justify-center border border-slate-200 overflow-hidden">
-                                            <img id="logoPreview" src="#" alt="Preview" class="hidden max-h-full max-w-full object-contain">
-                                            <span id="logoPlaceholder" class="text-xs text-slate-400">No Logo</span>
+                                    <label class="block text-sm font-medium text-slate-700 mb-2">Logo Struk</label>
+                                    <div class="flex flex-col gap-3">
+                                        <!-- Container Input -->
+                                        <div class="flex flex-col sm:flex-row gap-3">
+                                            <label class="cursor-pointer px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 transition shadow-sm text-center sm:text-left">
+                                                <span class="flex items-center gap-2">
+                                                    <i data-lucide="upload" class="w-4 h-4"></i> Upload File
+                                                </span>
+                                                <input type="file" id="logoUpload" accept="image/png" class="hidden">
+                                            </label>
+                                            
+                                            <div class="flex-grow relative">
+                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                                    <i data-lucide="link" class="w-4 h-4"></i>
+                                                </div>
+                                                <input type="text" id="logoUrlInput" placeholder="Atau tempel URL gambar (GitHub/Web)..." class="form-input w-full pl-10 pr-3 py-2 rounded-lg bg-slate-50 text-sm focus:bg-white">
+                                            </div>
+                                        </div>
+
+                                        <!-- Preview Area -->
+                                        <div class="flex items-center gap-4 mt-2">
+                                            <div class="h-20 w-20 bg-slate-100 rounded-lg flex items-center justify-center border border-slate-200 overflow-hidden relative">
+                                                <img id="logoPreview" src="#" alt="Preview" class="hidden w-full h-full object-contain z-10 bg-white">
+                                                <span id="logoPlaceholder" class="text-xs text-slate-400 absolute z-0 flex flex-col items-center">
+                                                    <i data-lucide="image" class="w-6 h-6 mb-1 opacity-50"></i>
+                                                    No Logo
+                                                </span>
+                                            </div>
+                                            <div class="text-xs text-slate-500 max-w-xs">
+                                                <p>Format: PNG, JPG.</p>
+                                                <p class="mt-1 text-slate-400">Tips: Jika dari GitHub, gunakan link "Raw" (raw.githubusercontent.com).</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -862,6 +885,7 @@
         
         // Settings elements
         const logoUpload = document.getElementById('logoUpload');
+        const logoUrlInput = document.getElementById('logoUrlInput'); // Add URL input ref
         const logoPreview = document.getElementById('logoPreview');
         const logoPlaceholder = document.getElementById('logoPlaceholder'); // Added helper
         const paperSize = document.getElementById('paperSize');
@@ -949,6 +973,11 @@
                 logoPreview.src = savedLogoUrl;
                 logoPreview.classList.remove('hidden');
                 if(logoPlaceholder) logoPlaceholder.classList.add('hidden');
+                
+                // Populate URL input if it's not data URI (base64)
+                if (!savedLogoUrl.startsWith('data:')) {
+                    logoUrlInput.value = savedLogoUrl;
+                }
             }
             if (savedPaperSize) {
                 paperSize.value = savedPaperSize;
@@ -964,24 +993,48 @@
         }
 
         async function saveSettings() {
-            const isNewLogoUploaded = logoPreview.src.startsWith('data:image');
+            const logoUrlInputVal = logoUrlInput.value.trim();
+            const currentSrc = logoPreview.src;
             let logoUrlToSave = localStorage.getItem('pos_logo_url');
 
-            if (isNewLogoUploaded) {
-                const fileData = logoPreview.src;
+            // Logic: 
+            // 1. If Preview shows a valid HTTP URL (from input), use that.
+            // 2. If Preview shows Data URI (from file upload), upload it.
+            
+            if (logoUrlInputVal && currentSrc === logoUrlInputVal) {
+                 // Validasi URL sederhana
+                 try {
+                    new URL(logoUrlInputVal);
+                    logoUrlToSave = logoUrlInputVal;
+                } catch (_) {
+                    alert("URL Logo tidak valid.");
+                    return;
+                }
+            } else if (currentSrc.startsWith('data:image')) {
+                const fileData = currentSrc;
                 const result = await apiRequest('uploadLogo', { fileData: fileData, fileType: 'image/png' });
 
                 if (result && result.success) {
                     logoUrlToSave = result.url;
-                    logoPreview.src = logoUrlToSave;
+                    // Update preview src to the new uploaded URL so next saves don't re-upload
+                    logoPreview.src = logoUrlToSave; 
                 } else {
                     alert("Gagal mengupload logo ke Google Drive. Pengaturan logo tidak disimpan.");
                     return;
+                }
+            } else if (logoUrlInputVal === '' && currentSrc.startsWith('http') && !currentSrc.includes('googleusercontent')) {
+                // Case: User cleared URL input but preview still shows old URL? 
+                // Or maybe they want to remove logo.
+                // For now, if input is empty but preview hidden, we clear logo.
+                if (logoPreview.classList.contains('hidden')) {
+                    logoUrlToSave = '';
                 }
             }
             
             if (logoUrlToSave) {
                 localStorage.setItem('pos_logo_url', logoUrlToSave);
+            } else if (logoPreview.classList.contains('hidden')) {
+                localStorage.removeItem('pos_logo_url');
             }
             
             localStorage.setItem('pos_paper_size', paperSize.value);
@@ -1000,12 +1053,30 @@
                     logoPreview.src = e.target.result;
                     logoPreview.classList.remove('hidden');
                     if(logoPlaceholder) logoPlaceholder.classList.add('hidden');
+                    // Clear URL input when file is chosen
+                    logoUrlInput.value = '';
                 }
                 reader.readAsDataURL(file);
             } else {
                 alert("Harap pilih file dengan format PNG.");
             }
         }
+
+        // Listener for URL Input changes
+        logoUrlInput.addEventListener('input', (e) => {
+            const url = e.target.value.trim();
+            if (url) {
+                logoPreview.src = url;
+                logoPreview.classList.remove('hidden');
+                if(logoPlaceholder) logoPlaceholder.classList.add('hidden');
+                // Clear file input value so we know to prefer URL
+                logoUpload.value = '';
+            } else {
+                // If cleared, hide preview
+                logoPreview.classList.add('hidden');
+                if(logoPlaceholder) logoPlaceholder.classList.remove('hidden');
+            }
+        });
 
         function applyPrintStyles() {
             const size = paperSize.value;
