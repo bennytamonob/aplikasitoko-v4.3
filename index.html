@@ -205,6 +205,16 @@
                 visibility: hidden !important;
             }
         }
+
+        /* Helper Classes to Prevent Bad Page Breaks in PDF */
+        .avoid-break {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+        }
+        #printRabItems tr {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+        }
     </style>
     <style id="print-style-rules"></style>
 </head>
@@ -997,7 +1007,7 @@
                     <!-- Header -->
                     <div class="text-center mb-6">
                         <div class="flex justify-center mb-4">
-                             <img id="invoiceLogo" src="https://i.ibb.co.com/3mssnrM1/Salinan-dari-Logo-Jireh-Creations-logo-only.png" alt="Logo" class="h-16 object-contain grayscale hover:grayscale-0 transition"/>
+                             <img id="invoiceLogo" src="#" alt="Logo" class="hidden h-16 object-contain grayscale hover:grayscale-0 transition"/>
                         </div>
                         <h1 class="text-2xl font-bold text-slate-900 uppercase tracking-widest">JIREH CREATIONS</h1>
                         <p class="text-xs text-slate-500 uppercase tracking-wide mt-1">Struk Penjualan Resmi</p>
@@ -1110,7 +1120,7 @@
                         <!-- Items appended dynamically via JS -->
                     </tbody>
                     <tfoot>
-                        <tr class="bg-slate-50 font-bold">
+                        <tr class="bg-slate-50 font-bold avoid-break">
                             <td colspan="4" class="border border-slate-800 py-3 px-3 text-right">GRAND TOTAL</td>
                             <td class="border border-slate-800 py-3 px-3 text-right text-base" id="printRabGrandTotal">Rp 0</td>
                             <td class="border border-slate-800"></td>
@@ -1119,7 +1129,8 @@
                 </table>
 
                 <!-- Signatures -->
-                <div class="flex justify-between mt-16 pt-8">
+                <!-- Added .avoid-break to prevent this block from being split -->
+                <div class="flex justify-between mt-16 pt-8 avoid-break">
                     <!-- Klien / Pelanggan -->
                     <div class="text-center w-48">
                         <p class="text-sm mb-2">Menyetujui,</p>
@@ -1148,7 +1159,7 @@
 
     <!-- LOGIC SCRIPT (Full Data Restored) -->
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqX4z8EeAp3h6MsXfl2oaI9V1VfxvMoFCAK2PNB-Sxglia5lmAr6r3McIbdyrd2Q/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzRCRV73M9tqjzgEJSQ8Aak2yEIf8Wux-OmPysf5TL0tEYGJ_7SL5dcg5z5E3FgShPH/exec";
 
         // --- DOM Elements ---
         const loader = document.getElementById('loader');
@@ -1161,11 +1172,10 @@
         let inventoryChartInstance = null;
         let cart = [];
         let rabCart = []; 
-        let rabHistory = JSON.parse(localStorage.getItem('pos_rab_history')) || []; // History RAB local state
+        let rabHistory = []; // Diubah: Tidak langsung load dari localStorage agar sinkron dengan database
         let fullInventoryData = [];
         let fullSalesData = []; 
         let displayedSalesData = [];
-        const defaultCategories = ["Snack", "Paket Snack", "Lisensi", "Router", "Switch", "Kabel"];
         let categories = [];
         let html5QrcodeScanner = null;
 
@@ -1394,6 +1404,8 @@
         }
 
         // --- CATEGORY MANAGEMENT ---
+        const defaultCategories = ["Snack", "Paket Snack", "Lisensi", "Router", "Switch", "Kabel"];
+
         function loadCategories() {
             const storedCategories = localStorage.getItem('pos_categories');
             categories = storedCategories ? JSON.parse(storedCategories) : [...defaultCategories];
@@ -1481,7 +1493,10 @@
                 return result.data;
             } catch (error) {
                 console.error('API Request Error:', error);
-                alert(`Terjadi kesalahan: ${error.message}. Periksa konsol untuk detail.`);
+                // Matikan alert pada kegagalan fetch RAB agar app tidak terblokir
+                if(action !== 'getRabHistory') {
+                    alert(`Terjadi kesalahan: ${error.message}. Periksa konsol untuk detail.`);
+                }
                 return null;
             } finally {
                 hideLoader();
@@ -1542,15 +1557,15 @@
             
             const stockThreshold = parseInt(localStorage.getItem('pos_stock_threshold')) || 10;
             const expiryThresholdDays = parseInt(localStorage.getItem('pos_expiry_threshold')) || 30;
-            
+
             const [dashboardData, allSales, inventory] = await Promise.all([
-                apiRequest('getDashboardData'),
+                apiRequest('getDashboardData'), 
                 apiRequest('getSales'),
                 apiRequest('getInventory')
             ]);
 
             if (dashboardData && allSales && inventory) {
-                fullInventoryData = inventory; // Store globally
+                fullInventoryData = inventory; 
                 document.getElementById('salesToday').textContent = formatCurrency(dashboardData.salesToday);
                 document.getElementById('inventoryCount').textContent = inventory.length; 
 
@@ -1656,7 +1671,7 @@
                     datasets: [{ 
                         label: 'Penjualan', 
                         data: salesData.map(d => d.total), 
-                        borderColor: '#22c55e',
+                        borderColor: '#22c55e', 
                         backgroundColor: 'rgba(34, 197, 94, 0.1)', 
                         borderWidth: 3,
                         fill: true, 
@@ -2129,6 +2144,17 @@
             });
             
             renderRabTable();
+
+            // AMBIL DATA DARI DATABASE
+            const dbHistory = await apiRequest('getRabHistory');
+            if (dbHistory && Array.isArray(dbHistory)) {
+                rabHistory = dbHistory;
+                // Sinkronkan ke local storage sebagai cache
+                localStorage.setItem('pos_rab_history', JSON.stringify(rabHistory));
+            } else {
+                // Fallback jika API gagal / belum diimplementasi di AppScript
+                rabHistory = JSON.parse(localStorage.getItem('pos_rab_history')) || [];
+            }
             renderRabHistoryTable();
         }
 
@@ -2364,7 +2390,7 @@
         });
 
         // Preview & Download Main Button in RAB Form
-        document.getElementById('printRabBtnTop').addEventListener('click', () => {
+        document.getElementById('printRabBtnTop').addEventListener('click', async () => {
             if(rabCart.length === 0) { alert('Tambahkan minimal 1 item ke RAB sebelum melihat preview.'); return; }
             
             const title = document.getElementById('rabTitle').value || 'Dokumen Rencana Anggaran Biaya';
@@ -2382,6 +2408,9 @@
                 total: grandTotal
             };
 
+            // SIMPAN KE DATABASE
+            await apiRequest('saveRab', rabData);
+
             // Update or push to History
             const existingIndex = rabHistory.findIndex(r => r.number === number);
             if (existingIndex > -1) {
@@ -2390,7 +2419,7 @@
                 rabHistory.push(rabData);
             }
             
-            // Save localstorage
+            // Save localstorage as fallback/cache
             localStorage.setItem('pos_rab_history', JSON.stringify(rabHistory));
             renderRabHistoryTable();
 
@@ -2399,7 +2428,7 @@
         });
 
         // History RAB Table Event Listeners
-        document.getElementById('rabHistoryTableBody').addEventListener('click', (e) => {
+        document.getElementById('rabHistoryTableBody').addEventListener('click', async (e) => {
             const btn = e.target.closest('button');
             if(!btn) return;
 
@@ -2411,6 +2440,9 @@
             }
             if (btn.classList.contains('delete-rab-btn')) {
                 if (confirm(`Apakah Anda yakin ingin menghapus Histori RAB: ${number}?`)) {
+                    // HAPUS DARI DATABASE
+                    await apiRequest('deleteRab', { number: number });
+
                     rabHistory = rabHistory.filter(r => r.number !== number);
                     localStorage.setItem('pos_rab_history', JSON.stringify(rabHistory));
                     renderRabHistoryTable();
@@ -2430,12 +2462,14 @@
             btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Memproses PDF...';
             if(window.lucide) lucide.createIcons();
 
+            // Setup proper configuration to avoid breaking elements across pages
             const opt = {
-                margin:       0,
+                margin:       [10, 0, 15, 0], // Margin atas 10mm, bawah 15mm agar sambungan halaman rapi
                 filename:     `RAB_${rabNumber}.pdf`,
                 image:        { type: 'jpeg', quality: 1 },
-                html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                html2canvas:  { scale: 2, useCORS: true, letterRendering: true, scrollY: 0 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak:    { mode: ['css', 'legacy'], avoid: ['tr', '.avoid-break'] } // Mencegah tr dan tanda tangan terpotong
             };
 
             html2pdf().set(opt).from(element).save().then(() => {
