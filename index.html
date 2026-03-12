@@ -1083,10 +1083,10 @@
         
         <div class="w-full overflow-x-auto flex justify-center pb-12">
             <!-- Fixed A4 Size Wrapper for Exact PDF Capture -->
-            <div id="rabPrintCard" class="bg-white text-slate-900 shadow-2xl relative w-[210mm] min-h-[297mm] p-[20mm] shrink-0">
+            <div id="rabPrintCard" class="bg-white text-slate-900 shadow-2xl relative w-[210mm] min-h-[297mm] pt-[5mm] px-[20mm] pb-[20mm] shrink-0">
                 
                 <!-- Logo Top (Full Logo) -->
-                <div class="flex justify-center mb-6">
+                <div class="flex justify-center mb-4">
                     <img src="https://i.ibb.co.com/23K7yckN/Logo-Jireh-Creations-full.png" alt="Logo Jireh Creations" class="h-20 object-contain">
                 </div>
 
@@ -1105,7 +1105,7 @@
                 </div>
 
                 <!-- Main Table -->
-                <table class="w-full text-sm border-collapse border border-slate-800 mb-8">
+                <table class="w-full text-sm border-collapse mb-8">
                     <thead class="bg-slate-100">
                         <tr>
                             <th class="border border-slate-800 py-2 px-3 text-center w-12">No</th>
@@ -1159,7 +1159,7 @@
 
     <!-- LOGIC SCRIPT (Full Data Restored) -->
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzRCRV73M9tqjzgEJSQ8Aak2yEIf8Wux-OmPysf5TL0tEYGJ_7SL5dcg5z5E3FgShPH/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhhY368Xv72by7jF8fFT-mJY278qJCUs_ZjTtICfLSP7cyUk2gtMcMS_Z70vV4czqb/exec";
 
         // --- DOM Elements ---
         const loader = document.getElementById('loader');
@@ -1487,17 +1487,33 @@
                 const bodyPayload = { ...data, action: action };
                 const options = { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(bodyPayload) };
                 const response = await fetch(SCRIPT_URL, options);
+                
                 if (!response.ok) throw new Error(`Server error! status: ${response.status}`);
-                const result = await response.json();
-                if (result.status === 'error') throw new Error(result.message);
+                
+                // Parse text first to handle cases where script returns HTML/errors
+                const responseText = await response.text();
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch (e) {
+                    console.error("Invalid JSON response:", responseText);
+                    throw new Error("Respons dari server tidak valid. Pastikan Google Apps Script URL sudah di-deploy dengan benar.");
+                }
+
+                if (result && result.status === 'error') {
+                    // Mencegah pesan error kosong dengan membaca result.data.message
+                    const errorMsg = result.message || (result.data && result.data.message) || "Terjadi error pada server.";
+                    throw new Error(errorMsg);
+                }
                 return result.data;
             } catch (error) {
                 console.error('API Request Error:', error);
-                // Matikan alert pada kegagalan fetch RAB agar app tidak terblokir
+                // Matikan alert pada kegagalan fetch RAB History agar aplikasi tidak terblokir saat loading awal
                 if(action !== 'getRabHistory') {
                     alert(`Terjadi kesalahan: ${error.message}. Periksa konsol untuk detail.`);
                 }
-                return null;
+                // Jika error, lemparkan kembali supaya ditangani oleh fungsi pemanggil (agar fallback ke lokal)
+                throw error;
             } finally {
                 hideLoader();
             }
@@ -1526,14 +1542,18 @@
             e.preventDefault();
             const loginError = document.getElementById('loginError');
             const data = { username: loginForm.username.value, password: loginForm.password.value };
-            const result = await apiRequest('login', data);
-            if (result && result.success) {
-                sessionStorage.setItem('isLoggedIn', 'true');
-                loginPage.classList.add('hidden');
-                appPage.classList.remove('hidden');
-                loginError.classList.add('hidden');
-                loadDashboardData();
-            } else {
+            try {
+                const result = await apiRequest('login', data);
+                if (result && result.success) {
+                    sessionStorage.setItem('isLoggedIn', 'true');
+                    loginPage.classList.add('hidden');
+                    appPage.classList.remove('hidden');
+                    loginError.classList.add('hidden');
+                    loadDashboardData();
+                } else {
+                    loginError.classList.remove('hidden');
+                }
+            } catch(e) {
                 loginError.classList.remove('hidden');
             }
         };
@@ -1558,37 +1578,41 @@
             const stockThreshold = parseInt(localStorage.getItem('pos_stock_threshold')) || 10;
             const expiryThresholdDays = parseInt(localStorage.getItem('pos_expiry_threshold')) || 30;
 
-            const [dashboardData, allSales, inventory] = await Promise.all([
-                apiRequest('getDashboardData'), 
-                apiRequest('getSales'),
-                apiRequest('getInventory')
-            ]);
+            try {
+                const [dashboardData, allSales, inventory] = await Promise.all([
+                    apiRequest('getDashboardData'), 
+                    apiRequest('getSales'),
+                    apiRequest('getInventory')
+                ]);
 
-            if (dashboardData && allSales && inventory) {
-                fullInventoryData = inventory; 
-                document.getElementById('salesToday').textContent = formatCurrency(dashboardData.salesToday);
-                document.getElementById('inventoryCount').textContent = inventory.length; 
+                if (dashboardData && allSales && inventory) {
+                    fullInventoryData = inventory; 
+                    document.getElementById('salesToday').textContent = formatCurrency(dashboardData.salesToday);
+                    document.getElementById('inventoryCount').textContent = inventory.length; 
 
-                const lowStockItems = inventory.filter(item => item.stok <= stockThreshold);
-                
-                const today = new Date();
-                const warningDate = new Date();
-                warningDate.setDate(today.getDate() + expiryThresholdDays);
-                
-                const expiringItems = inventory.filter(item => {
-                    if (!item.expired_date) return false;
-                    const expDate = new Date(item.expired_date);
-                    return expDate <= warningDate && expDate >= today; 
-                }).sort((a, b) => new Date(a.expired_date) - new Date(b.expired_date));
+                    const lowStockItems = inventory.filter(item => item.stok <= stockThreshold);
+                    
+                    const today = new Date();
+                    const warningDate = new Date();
+                    warningDate.setDate(today.getDate() + expiryThresholdDays);
+                    
+                    const expiringItems = inventory.filter(item => {
+                        if (!item.expired_date) return false;
+                        const expDate = new Date(item.expired_date);
+                        return expDate <= warningDate && expDate >= today; 
+                    }).sort((a, b) => new Date(a.expired_date) - new Date(b.expired_date));
 
-                renderNotifications(lowStockItems, expiringItems);
-                
-                const stats = calculatePeriodSales(allSales);
-                document.getElementById('salesWeek').textContent = formatCurrency(stats.totalWeek);
-                document.getElementById('salesMonth').textContent = formatCurrency(stats.totalMonth);
+                    renderNotifications(lowStockItems, expiringItems);
+                    
+                    const stats = calculatePeriodSales(allSales);
+                    document.getElementById('salesWeek').textContent = formatCurrency(stats.totalWeek);
+                    document.getElementById('salesMonth').textContent = formatCurrency(stats.totalMonth);
 
-                renderSalesChart(dashboardData.last7DaysSales);
-                renderInventoryChart(inventory); 
+                    renderSalesChart(dashboardData.last7DaysSales);
+                    renderInventoryChart(inventory); 
+                }
+            } catch(e) {
+                console.warn('Dashboard gagal memuat data server.', e);
             }
         }
 
@@ -1732,12 +1756,14 @@
         
         // --- Inventory Management ---
         async function loadInventory() {
-            const inventory = await apiRequest('getInventory');
-            if (inventory) {
-                fullInventoryData = inventory;
-                renderInventoryTable();
-                populateCategoryDropdowns();
-            }
+            try {
+                const inventory = await apiRequest('getInventory');
+                if (inventory) {
+                    fullInventoryData = inventory;
+                    renderInventoryTable();
+                    populateCategoryDropdowns();
+                }
+            } catch(e) {}
         }
 
         function renderInventoryTable() {
@@ -1859,21 +1885,25 @@
 
             } else {
                 const action = modalTitle === 'Edit Barang' ? 'updateInventory' : 'addInventory';
-                const result = await apiRequest(action, item);
-                if (result) {
-                    document.getElementById('inventoryModal').classList.add('hidden');
-                    loadInventory();
-                }
+                try {
+                    const result = await apiRequest(action, item);
+                    if (result) {
+                        document.getElementById('inventoryModal').classList.add('hidden');
+                        loadInventory();
+                    }
+                } catch(err) {}
             }
         };
 
         // --- POS ---
         async function loadPosData() {
-            const inventory = await apiRequest('getInventory');
-            if (inventory) {
-                fullInventoryData = inventory; 
-                renderPosOptions();
-            }
+            try {
+                const inventory = await apiRequest('getInventory');
+                if (inventory) {
+                    fullInventoryData = inventory; 
+                    renderPosOptions();
+                }
+            } catch(e) {}
         }
         
         function renderPosOptions() {
@@ -1983,11 +2013,13 @@
             if (cart.length === 0) return;
             const total = cart.reduce((sum, item) => sum + (item.harga * item.qty), 0);
             const saleData = { items: cart, total: total };
-            const result = await apiRequest('recordSale', saleData);
-            if (result && result.transactionId) {
-                showInvoice(result.transactionId, new Date(), cart, total);
-                cart = []; updateCart(); loadPosData();
-            }
+            try {
+                const result = await apiRequest('recordSale', saleData);
+                if (result && result.transactionId) {
+                    showInvoice(result.transactionId, new Date(), cart, total);
+                    cart = []; updateCart(); loadPosData();
+                }
+            } catch(e) {}
         };
 
         function showInvoice(id, date, items, total) {
@@ -2016,11 +2048,13 @@
         }
 
         async function loadSalesHistory() {
-            const sales = await apiRequest('getSales');
-            if (sales) {
-                fullSalesData = sales;
-                renderHistoryTableSales(fullSalesData);
-            }
+            try {
+                const sales = await apiRequest('getSales');
+                if (sales) {
+                    fullSalesData = sales;
+                    renderHistoryTableSales(fullSalesData);
+                }
+            } catch(e) {}
         }
 
         function groupSalesById(sales) {
@@ -2091,22 +2125,26 @@
 
         const handleDeleteTransaction = async (transactionId) => {
             if (confirm(`Apakah Anda yakin ingin menghapus transaksi dengan ID: ${transactionId}?`)) {
-                const result = await apiRequest('deleteTransaction', { transactionId });
-                if (result && result.success) {
-                    alert('Transaksi berhasil dihapus.');
-                    loadSalesHistory();
-                }
+                try {
+                    const result = await apiRequest('deleteTransaction', { transactionId });
+                    if (result && result.success) {
+                        alert('Transaksi berhasil dihapus.');
+                        loadSalesHistory();
+                    }
+                } catch(e) {}
             }
         };
 
         const handleExportInventory = async () => {
-            const inventory = await apiRequest('getInventory');
-            if(inventory && inventory.length > 0) {
-                const ws = XLSX.utils.json_to_sheet(inventory);
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "Inventory");
-                XLSX.writeFile(wb, "Data_Barang.xlsx");
-            } else { alert("Tidak ada data barang untuk diexport."); }
+            try {
+                const inventory = await apiRequest('getInventory');
+                if(inventory && inventory.length > 0) {
+                    const ws = XLSX.utils.json_to_sheet(inventory);
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, "Inventory");
+                    XLSX.writeFile(wb, "Data_Barang.xlsx");
+                } else { alert("Tidak ada data barang untuk diexport."); }
+            } catch(e) {}
         };
 
         const handleExportSales = () => {
@@ -2128,8 +2166,10 @@
 
         async function loadRabView() {
             if (fullInventoryData.length === 0) {
-                const inv = await apiRequest('getInventory');
-                if(inv) fullInventoryData = inv;
+                try {
+                    const inv = await apiRequest('getInventory');
+                    if(inv) fullInventoryData = inv;
+                } catch(e) {}
             }
             
             const rabNumInput = document.getElementById('rabNumber');
@@ -2145,14 +2185,19 @@
             
             renderRabTable();
 
-            // AMBIL DATA DARI DATABASE
-            const dbHistory = await apiRequest('getRabHistory');
-            if (dbHistory && Array.isArray(dbHistory)) {
-                rabHistory = dbHistory;
-                // Sinkronkan ke local storage sebagai cache
-                localStorage.setItem('pos_rab_history', JSON.stringify(rabHistory));
-            } else {
-                // Fallback jika API gagal / belum diimplementasi di AppScript
+            // AMBIL DATA DARI DATABASE (Tahan jika error agar aplikasi tetap jalan pakai cache lokal)
+            try {
+                const dbHistory = await apiRequest('getRabHistory');
+                if (dbHistory && Array.isArray(dbHistory)) {
+                    rabHistory = dbHistory;
+                    // Sinkronkan ke local storage sebagai cache
+                    localStorage.setItem('pos_rab_history', JSON.stringify(rabHistory));
+                } else {
+                    // Fallback jika API mengembalikan data kosong atau null
+                    rabHistory = JSON.parse(localStorage.getItem('pos_rab_history')) || [];
+                }
+            } catch (err) {
+                console.warn('Gagal memuat histori RAB dari database. Menggunakan data lokal.', err);
                 rabHistory = JSON.parse(localStorage.getItem('pos_rab_history')) || [];
             }
             renderRabHistoryTable();
@@ -2314,11 +2359,15 @@
                 return;
             }
             alert("Mencoba koneksi ke Google Apps Script...");
-            const result = await apiRequest('testConnection');
-            if (result && result.message) {
-                alert(`BERHASIL!\n\nServer merespon: "${result.message}"\n\nKoneksi Anda sudah benar. Sekarang silakan coba login.`);
-            } else {
-                alert("TES KONEKSI GAGAL.\n\nPeriksa kembali langkah-langkah setup, terutama:\n1. URL SCRIPT_URL sudah yang terbaru.\n2. Izin akses deployment adalah 'Anyone'.\n3. ID Spreadsheet di file Code.gs sudah benar.");
+            try {
+                const result = await apiRequest('testConnection');
+                if (result && result.message) {
+                    alert(`BERHASIL!\n\nServer merespon: "${result.message}"\n\nKoneksi Anda sudah benar. Sekarang silakan coba login.`);
+                } else {
+                    alert("TES KONEKSI GAGAL.\n\nPeriksa kembali langkah-langkah setup, terutama:\n1. URL SCRIPT_URL sudah yang terbaru.\n2. Izin akses deployment adalah 'Anyone'.\n3. ID Spreadsheet di file Code.gs sudah benar.");
+                }
+            } catch(e) {
+                 alert("TES KONEKSI GAGAL.\n\nError: " + e.message);
             }
         }
         testConnectionBtn.addEventListener('click', handleTestConnection);
@@ -2337,8 +2386,10 @@
             }
             if (btn.classList.contains('delete-btn')) {
                 if (confirm('Apakah Anda yakin ingin menghapus barang ini?')) { 
-                    const result = await apiRequest('deleteInventory', { kode_barang: code });
-                    if (result) loadInventory(); 
+                    try {
+                        const result = await apiRequest('deleteInventory', { kode_barang: code });
+                        if (result) loadInventory(); 
+                    } catch(err){}
                 }
             }
         });
@@ -2408,8 +2459,12 @@
                 total: grandTotal
             };
 
-            // SIMPAN KE DATABASE
-            await apiRequest('saveRab', rabData);
+            // SIMPAN KE DATABASE (Tahan error agar tetap bisa jalan menggunakan memori lokal)
+            try {
+                await apiRequest('saveRab', rabData);
+            } catch (err) {
+                console.warn('Gagal menyimpan ke database server. Tetap menyimpan ke memori lokal.', err);
+            }
 
             // Update or push to History
             const existingIndex = rabHistory.findIndex(r => r.number === number);
@@ -2440,8 +2495,12 @@
             }
             if (btn.classList.contains('delete-rab-btn')) {
                 if (confirm(`Apakah Anda yakin ingin menghapus Histori RAB: ${number}?`)) {
-                    // HAPUS DARI DATABASE
-                    await apiRequest('deleteRab', { number: number });
+                    // HAPUS DARI DATABASE (Tahan error agar tidak freeze)
+                    try {
+                        await apiRequest('deleteRab', { number: number });
+                    } catch (err) {
+                        console.warn('Gagal menghapus dari database server.', err);
+                    }
 
                     rabHistory = rabHistory.filter(r => r.number !== number);
                     localStorage.setItem('pos_rab_history', JSON.stringify(rabHistory));
@@ -2464,12 +2523,12 @@
 
             // Setup proper configuration to avoid breaking elements across pages
             const opt = {
-                margin:       [10, 0, 15, 0], // Margin atas 10mm, bawah 15mm agar sambungan halaman rapi
+                margin:       [5, 0, 15, 0], // Margin atas diturunkan jadi 5mm agar sambungan halaman dan margin rapi
                 filename:     `RAB_${rabNumber}.pdf`,
                 image:        { type: 'jpeg', quality: 1 },
                 html2canvas:  { scale: 2, useCORS: true, letterRendering: true, scrollY: 0 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak:    { mode: ['css', 'legacy'], avoid: ['tr', '.avoid-break'] } // Mencegah tr dan tanda tangan terpotong
+                pagebreak:    { mode: ['css', 'legacy'], avoid: ['tr', 'thead', 'tfoot', '.avoid-break'] } // Mencegah tr, header, dan tanda tangan terpotong
             };
 
             html2pdf().set(opt).from(element).save().then(() => {
