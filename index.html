@@ -153,7 +153,7 @@
         @keyframes loader-dots3 { 0% { transform: scale(1); } 100% { transform: scale(0); } }
         @keyframes loader-dots2 { 0% { transform: translate(0, 0); } 100% { transform: translate(24px, 0); } }
 
-        /* Print Rules - ONLY FOR INVOICE NOW (RAB uses PDF Library) */
+        /* Print Rules - FORCE NO HEADER/FOOTER */
         @media print {
             @page { 
                 margin: 0 !important; 
@@ -195,25 +195,21 @@
                 margin: 0 !important;
                 box-shadow: none !important; 
                 border: none !important;
-                padding: 10mm 5mm; 
+                padding: 10mm 5mm; /* Give internal padding */
             }
             .no-print { display: none !important; }
             #invoice-print-area { padding: 0 !important; }
 
-            #invoiceModal.hidden {
-                display: none !important;
-                visibility: hidden !important;
+            /* Paksa ukuran logo pada saat print dan buang filter abu-abu */
+            #invoiceLogo {
+                width: 45px !important;
+                height: 45px !important;
+                max-width: 45px !important;
+                max-height: 45px !important;
+                object-fit: contain !important;
+                filter: none !important;
+                -webkit-filter: grayscale(0) !important;
             }
-        }
-
-        /* Helper Classes to Prevent Bad Page Breaks in PDF */
-        .avoid-break {
-            page-break-inside: avoid !important;
-            break-inside: avoid !important;
-        }
-        #printRabItems tr {
-            page-break-inside: avoid !important;
-            break-inside: avoid !important;
         }
     </style>
     <style id="print-style-rules"></style>
@@ -830,7 +826,7 @@
                                     <label class="block text-sm font-medium text-slate-700 mb-2">Upload Logo Toko</label>
                                     <div class="flex items-start gap-4">
                                         <div class="h-24 w-24 bg-slate-50 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden relative group">
-                                            <img id="logoPreview" src="https://i.ibb.co.com/3mssnrM1/Salinan-dari-Logo-Jireh-Creations-logo-only.png" alt="Preview" class="hidden w-full h-full object-contain z-10 bg-white">
+                                            <img id="logoPreview" src="#" alt="Preview" class="hidden w-full h-full object-contain z-10 bg-white">
                                             <span id="logoPlaceholder" class="text-center">
                                                 <i data-lucide="image" class="w-6 h-6 text-slate-300 mx-auto mb-1"></i>
                                                 <span class="text-[10px] text-slate-400 block">No Logo</span>
