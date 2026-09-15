@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penjualan & Stok JIREH CREATIONS</title>
+    <title>JIREH CREATIONS — Smart POS</title>
     
     <!-- Favicon / Logo Browser Tab -->
     <link rel="icon" type="image/png" href="https://i.ibb.co.com/3mssnrM1/Salinan-dari-Logo-Jireh-Creations-logo-only.png">
@@ -213,6 +213,183 @@
         }
     </style>
     <style id="print-style-rules"></style>
+
+<style id="jireh-redesign-2026">
+/* =========================================================
+   JIREH CREATIONS POS — UI REDESIGN 2026
+   Visual-only override. Existing IDs, JS logic, API contract,
+   and database actions are intentionally untouched.
+   ========================================================= */
+:root{
+  --jc-ink:#0b1220;
+  --jc-navy:#101828;
+  --jc-navy-2:#182230;
+  --jc-cyan:#0ea5a8;
+  --jc-cyan-2:#14b8a6;
+  --jc-gold:#f59e0b;
+  --jc-bg:#f6f7fb;
+  --jc-surface:#ffffff;
+  --jc-border:#e6eaf0;
+  --jc-muted:#667085;
+  --jc-danger:#ef4444;
+  --jc-shadow:0 10px 35px rgba(16,24,40,.08);
+  --jc-shadow-lg:0 24px 70px rgba(16,24,40,.14);
+}
+
+html{scroll-behavior:smooth}
+body{background:var(--jc-bg)!important;color:#344054!important;letter-spacing:-.01em}
+
+/* Loader */
+#loader{background:rgba(11,18,32,.78)!important;backdrop-filter:blur(12px)!important}
+#loader>div{background:#fff;padding:26px 34px;border-radius:24px;box-shadow:var(--jc-shadow-lg)}
+#loader p{color:var(--jc-navy)!important}
+.loader-dots div{background:var(--jc-cyan)!important}
+
+/* Login — dark editorial split */
+#loginPage{
+  background:
+    radial-gradient(circle at 18% 15%,rgba(20,184,166,.14),transparent 32%),
+    radial-gradient(circle at 82% 80%,rgba(245,158,11,.12),transparent 28%),
+    linear-gradient(135deg,#09111f 0%,#111b2e 48%,#0d1728 100%)!important;
+}
+#loginPage>div{max-width:1100px!important;height:640px!important;border-radius:28px!important;border:1px solid rgba(255,255,255,.1)!important;box-shadow:0 35px 100px rgba(0,0,0,.38)!important}
+#loginPage .md\:w-1\/2:first-child{background:linear-gradient(160deg,#0f766e 0%,#0b3f46 55%,#0b1220 100%)!important}
+#loginPage .md\:w-1\/2:first-child:after{display:none!important;content:none!important}
+#loginPage .md\:w-1\/2:first-child>div:last-child{bottom:auto!important;margin-top:auto!important;padding-top:18px!important}
+#loginPage .md\:w-1\/2:first-child>div:last-child p{line-height:1.55!important;white-space:normal!important;letter-spacing:.01em!important;color:rgba(255,255,255,.62)!important}
+#loginPage .md\:w-1\/2:first-child .w-64{background:rgba(255,255,255,.96)!important;border:1px solid rgba(255,255,255,.65)!important;border-radius:18px!important}
+#loginPage h1{font-size:2.35rem!important;letter-spacing:-.04em!important}
+#loginPage form input{border-radius:12px!important;background:#f8fafc!important;border:1px solid #d0d5dd!important}
+#loginPage form input:focus{border-color:var(--jc-cyan)!important;box-shadow:0 0 0 4px rgba(14,165,168,.12)!important}
+#loginPage form button[type="submit"]{background:linear-gradient(135deg,var(--jc-cyan),#0f766e)!important;border-radius:12px!important;box-shadow:0 12px 24px rgba(14,165,168,.22)!important}
+
+/* Shell */
+#appPage{background:var(--jc-bg)!important}
+#sidebar{width:260px!important;background:linear-gradient(180deg,#0b1220 0%,#111827 100%)!important;border-right:0!important;color:#d0d5dd!important;box-shadow:12px 0 30px rgba(16,24,40,.05)}
+#sidebar>div:first-child{height:84px!important;border-color:rgba(255,255,255,.07)!important;padding-left:20px!important;padding-right:20px!important}
+#sidebar>div:first-child .bg-slate-50{background:white!important;border:0!important;padding:6px!important}
+#sidebar h1{color:#fff!important;font-size:15px!important;letter-spacing:.02em!important}
+#sidebar h1+span{color:#5eead4!important}
+#sidebar nav{padding:22px 14px!important}
+#sidebar nav p{color:#667085!important;padding-left:12px!important}
+.sidebar-link{color:#98a2b3!important;border-radius:10px!important;padding:11px 12px!important;margin-bottom:4px!important}
+.sidebar-link:hover{background:rgba(255,255,255,.07)!important;color:#fff!important}
+.sidebar-link.active{background:linear-gradient(135deg,rgba(20,184,166,.22),rgba(14,165,168,.10))!important;color:#fff!important;box-shadow:inset 0 0 0 1px rgba(94,234,212,.14)!important}
+.sidebar-link.active i,.sidebar-link:hover i{color:#5eead4!important}
+#sidebar>div:last-child{background:rgba(255,255,255,.035)!important;border-color:rgba(255,255,255,.08)!important}
+#sidebar>div:last-child .text-slate-700{color:#f2f4f7!important}
+#sidebar>div:last-child .bg-primary-100{background:rgba(20,184,166,.16)!important;color:#5eead4!important}
+
+/* Main/header */
+#appPage>div.flex-1{background:var(--jc-bg)!important}
+#appPage header{height:72px!important;background:rgba(246,247,251,.88)!important;border-bottom:1px solid var(--jc-border)!important;backdrop-filter:blur(14px)!important;padding-left:28px!important;padding-right:28px!important}
+#appPage header input{background:#fff!important;border:1px solid var(--jc-border)!important;border-radius:12px!important;width:290px!important}
+#appPage header button{border-radius:10px!important}
+main{padding:28px!important}
+main>div{max-width:1450px!important}
+
+/* Type hierarchy */
+main h2{font-size:28px!important;color:var(--jc-ink)!important;letter-spacing:-.035em!important;font-weight:800!important}
+main h2+p{color:var(--jc-muted)!important}
+main h3{letter-spacing:-.02em!important}
+
+/* Cards and panels */
+.card{border:1px solid var(--jc-border)!important;border-radius:18px!important;box-shadow:var(--jc-shadow)!important;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease!important}
+.card:hover{box-shadow:0 14px 42px rgba(16,24,40,.10)!important}
+#dashboardView>.grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-4>.card{border-left:0!important;position:relative;overflow:hidden;padding:22px!important}
+#dashboardView>.grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-4>.card:before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--jc-cyan)}
+#dashboardView>.grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-4>.card:nth-child(2):before{background:#3b82f6}
+#dashboardView>.grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-4>.card:nth-child(3):before{background:#8b5cf6}
+#dashboardView>.grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-4>.card:nth-child(4):before{background:var(--jc-gold)}
+#dashboardView .card h3[id]{font-size:27px!important;color:var(--jc-ink)!important}
+#dashboardView .card .bg-primary-50{background:#ecfdf8!important;color:#0f766e!important}
+
+/* Forms */
+.form-input{border:1px solid #d0d5dd!important;border-radius:10px!important;background:#fff!important;box-shadow:0 1px 2px rgba(16,24,40,.04)!important}
+.form-input:focus{border-color:var(--jc-cyan)!important;box-shadow:0 0 0 4px rgba(14,165,168,.10)!important}
+.btn-primary,.bg-primary-600{background:linear-gradient(135deg,var(--jc-cyan),#0f766e)!important}
+.hover\:bg-primary-700:hover{background:#0f766e!important}
+.text-primary-600,.text-primary-700{color:#0f766e!important}
+.bg-primary-50{background:#ecfdf8!important}
+.bg-primary-100{background:#ccfbf1!important}
+.border-primary-500{border-color:var(--jc-cyan)!important}
+.shadow-primary-500\/20,.shadow-primary-500\/30{--tw-shadow-color:rgba(14,165,168,.18)!important}
+
+/* View toolbars */
+#inventoryView>div:first-child,#rabView>div:first-child{border:0!important;border-radius:18px!important;padding:18px 20px!important;box-shadow:var(--jc-shadow)!important}
+#inventoryView .card,#historyView .card,#settingsView .card,#rabView .card{overflow:hidden}
+
+/* Tables */
+table thead th{background:#f8fafc!important;color:#667085!important;font-size:11px!important;letter-spacing:.08em!important;border-color:#eaecf0!important}
+table tbody tr{transition:background .15s ease}
+table tbody tr:hover{background:#f9fafb!important}
+table tbody td{border-color:#f2f4f7!important}
+
+/* POS — cleaner two-panel terminal */
+#posView{height:calc(100vh - 150px)!important}
+#posView>.grid{gap:18px!important}
+#posView .lg\:col-span-2>div:nth-child(2){border:1px solid var(--jc-border)!important;border-radius:18px!important;box-shadow:var(--jc-shadow)!important;padding:18px!important}
+#posSearch{font-size:16px!important;padding-top:15px!important;padding-bottom:15px!important;border-width:1px!important}
+#posItemSelect{height:300px!important;background:#fbfcfd!important;border-color:#e4e7ec!important}
+#posView .lg\:col-span-1 .card{border-top:0!important;box-shadow:var(--jc-shadow-lg)!important}
+#posView .lg\:col-span-1 .card>div:first-child{background:#101828!important;color:white!important;border:0!important;padding:16px 18px!important}
+#posView .lg\:col-span-1 .card>div:first-child h3{color:white!important}
+#posView .lg\:col-span-1 .card>div:first-child i{color:#5eead4!important}
+#cartTotal{font-size:30px!important;color:var(--jc-ink)!important}
+#checkoutBtn{background:linear-gradient(135deg,#0f766e,#115e59)!important;border-radius:12px!important}
+#pph21Option{border:1px solid #d0d5dd!important;background:#fff!important;border-radius:12px!important;transition:border-color .18s ease,background .18s ease,box-shadow .18s ease!important}
+#pph21Option:has(#pph21Checkbox:checked){border-color:rgba(14,165,168,.55)!important;background:#f0fdfa!important;box-shadow:0 0 0 3px rgba(14,165,168,.07)!important}
+#pph21Checkbox{accent-color:#0f766e;width:18px;height:18px;flex:0 0 auto}
+#pph21Preview{background:#f8fafc!important;border:1px dashed #cbd5e1!important;border-radius:10px!important}
+#pph21Preview .pph-net{color:#0f766e!important}
+#invoicePphBreakdown{font-variant-numeric:tabular-nums;width:fit-content;max-width:100%;margin-left:auto}
+#invoicePphBreakdown .invoice-total-row{display:grid;grid-template-columns:minmax(0,auto) max-content;justify-content:end;column-gap:16px;align-items:baseline;padding:4px 0}
+#invoicePphBreakdown .invoice-total-row.total-payment{border-top:1px dashed #94a3b8;margin-top:5px;padding-top:9px}
+#invoicePphBreakdown .invoice-total-label{text-align:right;color:#64748b;font-size:11px;font-weight:700;line-height:1.35}
+#invoicePphBreakdown .invoice-total-value{text-align:right;color:#0f172a;font-size:12px;font-weight:700;white-space:nowrap}
+#invoicePphBreakdown .total-payment .invoice-total-label,#invoicePphBreakdown .total-payment .invoice-total-value{font-size:14px;color:#0f172a;font-weight:800}
+
+
+/* RAB */
+#rabGrandTotal{color:#0f766e!important}
+#rabView .card:nth-of-type(2),#rabView .card:nth-of-type(3){border-top:3px solid rgba(14,165,168,.22)!important}
+
+/* Settings */
+#settingsView{max-width:1000px!important}
+#settingsView .card{box-shadow:var(--jc-shadow)!important}
+
+/* Modals */
+#inventoryModal,#invoiceModal,#scannerModal,#rabPrintModal{backdrop-filter:blur(10px)!important}
+#inventoryModal>div,#scannerModal>div{border-radius:20px!important;box-shadow:var(--jc-shadow-lg)!important}
+#inventoryModal>div>div:first-child{background:#101828!important;border:0!important}
+#inventoryModal #modalTitle{color:#fff!important}
+#inventoryModal #closeModalBtn{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.12)!important;color:#fff!important}
+
+/* Action buttons — compact enterprise style */
+button{transition:all .18s ease}
+button:active{transform:translateY(1px)}
+#addItemBtn,#printRabBtnTop{background:linear-gradient(135deg,var(--jc-cyan),#0f766e)!important;border-radius:10px!important}
+
+/* Notification cards */
+#lowStockNotifications>div,#expiringNotifications>div{border-radius:12px!important;border:1px solid #eaecf0!important;background:#fbfcfd!important}
+
+/* Responsive refinements */
+@media (max-width:1023px){
+  #sidebar{width:280px!important}
+  main{padding:20px!important}
+  #appPage header{padding-left:18px!important;padding-right:18px!important}
+  #posView{height:auto!important}
+}
+@media (max-width:640px){
+  main{padding:14px!important}
+  #appPage header{height:64px!important}
+  main h2{font-size:23px!important}
+  #dashboardView>.grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-4{gap:12px!important}
+  .card{border-radius:14px!important}
+  #loginPage>div{height:auto!important;min-height:520px!important;border-radius:20px!important}
+}
+
+</style>
 </head>
 <body class="text-slate-600 antialiased bg-slate-50">
 
@@ -252,7 +429,8 @@
                 </div>
                 
                 <div class="relative z-10">
-                    <p class="text-sm text-primary-100/80">© 2024 JIREH CREATIONS System v2.0</p>
+                    <p class="text-xs text-primary-100/80">© 2026 JIREH CREATIONS</p>
+                    <p class="text-[10px] text-primary-100/60 mt-1 tracking-wider">POS • INVENTORY • SALES SYSTEM v2.1</p>
                 </div>
             </div>
 
@@ -631,6 +809,20 @@
                                 </div>
 
                                 <div class="p-5 bg-slate-50 border-t border-slate-200 z-10 shadow-[0_-5px_15px_rgba(0,0,0,0.02)]">
+                                    <label id="pph21Option" class="flex items-start gap-3 p-3 mb-4 cursor-pointer select-none">
+                                        <input type="checkbox" id="pph21Checkbox" class="mt-0.5">
+                                        <span class="min-w-0">
+                                            <span class="block text-sm font-bold text-slate-700">Potong PPh 21 Jasa Orang Pribadi</span>
+                                            <span class="block text-[11px] leading-4 text-slate-500 mt-0.5">Potongan 2,5% dari Nilai Invoice. Rincian PPh hanya ditampilkan pada invoice jika opsi ini dicentang.</span>
+                                        </span>
+                                    </label>
+
+                                    <div id="pph21Preview" class="hidden p-3 mb-4 text-xs space-y-1.5">
+                                        <div class="flex justify-between gap-4"><span class="text-slate-500">Nilai Invoice</span><span id="posInvoiceGross" class="font-semibold text-slate-700">Rp 0</span></div>
+                                        <div class="flex justify-between gap-4"><span class="text-slate-500">PPh 21 (2,5%)</span><span id="posPph21Amount" class="font-semibold text-red-600">- Rp 0</span></div>
+                                        <div class="flex justify-between gap-4 pt-1 border-t border-slate-200"><span class="font-bold text-slate-700">Total Pembayaran</span><span id="posPaymentTotal" class="pph-net font-extrabold">Rp 0</span></div>
+                                    </div>
+
                                     <div class="flex justify-between items-end mb-4">
                                         <span class="text-slate-500 text-sm font-medium">Total Tagihan</span>
                                         <span id="cartTotal" class="text-3xl font-bold text-slate-800 tracking-tight">Rp 0</span>
@@ -655,6 +847,9 @@
                         <div class="flex gap-2">
                             <button id="newRabBtn" class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 shadow-sm transition flex items-center gap-2 text-sm font-semibold">
                                 <i data-lucide="plus" class="w-4 h-4"></i> Buat Baru
+                            </button>
+                            <button id="createRabInvoiceBtnTop" class="px-5 py-2.5 bg-slate-900 text-white rounded-lg hover:bg-slate-800 shadow-md transition flex items-center gap-2 text-sm font-semibold">
+                                <i data-lucide="receipt-text" class="w-4 h-4"></i> Buat Invoice
                             </button>
                             <button id="printRabBtnTop" class="px-5 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 shadow-md shadow-primary-500/30 transition flex items-center gap-2 text-sm font-semibold">
                                 <i data-lucide="file-down" class="w-4 h-4"></i> Preview & Download
@@ -1042,9 +1237,28 @@
 
                     <!-- Totals -->
                     <div class="flex justify-end mb-8">
-                        <div class="w-full text-right border-t border-slate-800 border-dashed pt-4">
-                            <span class="text-slate-500 text-xs font-bold mr-4">TOTAL BAYAR</span>
-                            <span id="invoiceTotal" class="text-xl font-bold text-slate-900">Rp 0</span>
+                        <div class="w-full border-t border-slate-800 border-dashed pt-4">
+                            <!-- Tampilan normal: hanya muncul jika PPh 21 TIDAK dicentang -->
+                            <div id="invoiceNormalTotal" class="text-right">
+                                <span class="text-slate-500 text-xs font-bold mr-4">TOTAL BAYAR</span>
+                                <span id="invoiceTotal" class="text-xl font-bold text-slate-900">Rp 0</span>
+                            </div>
+
+                            <!-- Tampilan PPh 21: hanya muncul jika checkbox PPh 21 dicentang pada POS -->
+                            <div id="invoicePphBreakdown" class="hidden">
+                                <div class="invoice-total-row">
+                                    <span class="invoice-total-label">Nilai Invoice</span>
+                                    <span id="invoiceGrossTotal" class="invoice-total-value">Rp 0</span>
+                                </div>
+                                <div class="invoice-total-row">
+                                    <span class="invoice-total-label">Potongan PPh 21 Jasa Orang Pribadi (2,5%)</span>
+                                    <span id="invoicePph21Amount" class="invoice-total-value">- Rp 0</span>
+                                </div>
+                                <div class="invoice-total-row total-payment">
+                                    <span class="invoice-total-label">Total Pembayaran</span>
+                                    <span id="invoicePaymentTotal" class="invoice-total-value">Rp 0</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -1175,6 +1389,97 @@
         let displayedSalesData = [];
         let categories = [];
         let html5QrcodeScanner = null;
+
+        // --- PERFORMANCE CACHE ---
+        // Data yang baru diambil dari Apps Script dipakai ulang selama 30 detik.
+        // Ini membuat perpindahan Dashboard -> POS -> Data Barang terasa instan
+        // dan mengurangi request berulang ke Spreadsheet.
+        const DATA_CACHE_TTL_MS = 30000;
+        let inventoryLoadedAt = 0;
+        let salesLoadedAt = 0;
+        let dashboardLoadedAt = 0;
+        let lastDashboardData = null;
+        let loaderRequestCount = 0;
+        let loaderDelayTimer = null;
+
+        const isFresh = (timestamp) => timestamp > 0 && (Date.now() - timestamp) < DATA_CACHE_TTL_MS;
+        const invalidateInventoryCache = () => {
+            inventoryLoadedAt = 0;
+            dashboardLoadedAt = 0;
+            lastDashboardData = null;
+        };
+        const invalidateSalesCache = () => {
+            salesLoadedAt = 0;
+            dashboardLoadedAt = 0;
+            lastDashboardData = null;
+        };
+
+        // --- PPh 21 Jasa Orang Pribadi (2,5%) ---
+        const PPH21_RATE = 0.025;
+        const PPH21_META_STORAGE_KEY = 'pos_transaction_pph21_meta';
+
+        function calculatePph21(invoiceTotal) {
+            const gross = Number(invoiceTotal) || 0;
+            const pphAmount = Math.round(gross * PPH21_RATE);
+            return {
+                applied: true,
+                rate: PPH21_RATE,
+                grossTotal: gross,
+                pphAmount: pphAmount,
+                paymentTotal: gross - pphAmount
+            };
+        }
+
+        function getPph21MetaMap() {
+            try {
+                return JSON.parse(localStorage.getItem(PPH21_META_STORAGE_KEY)) || {};
+            } catch (e) {
+                console.warn('Metadata PPh 21 lokal tidak dapat dibaca.', e);
+                return {};
+            }
+        }
+
+        function saveTransactionPph21Meta(transactionId, meta) {
+            if (!transactionId || !meta || !meta.applied) return;
+            const map = getPph21MetaMap();
+            map[transactionId] = meta;
+            localStorage.setItem(PPH21_META_STORAGE_KEY, JSON.stringify(map));
+        }
+
+        function getTransactionPph21Meta(transactionId, transactionItems = []) {
+            // Prioritas 1: bila backend suatu saat mengembalikan metadata PPh pada baris transaksi.
+            const source = transactionItems.find(row => row && (row.pph21Applied !== undefined || row.pph21_applied !== undefined || row.pph21Amount !== undefined || row.pph21_amount !== undefined));
+            if (source) {
+                const appliedRaw = source.pph21Applied ?? source.pph21_applied;
+                const applied = appliedRaw === true || appliedRaw === 1 || String(appliedRaw).toLowerCase() === 'true' || String(appliedRaw) === '1';
+                if (applied) {
+                    const gross = Number(source.invoiceTotal ?? source.invoice_total ?? source.grossTotal ?? source.gross_total);
+                    const amount = Number(source.pph21Amount ?? source.pph21_amount);
+                    const payment = Number(source.paymentTotal ?? source.payment_total);
+                    if (Number.isFinite(amount)) {
+                        return {
+                            applied: true,
+                            rate: Number(source.pph21Rate ?? source.pph21_rate) || PPH21_RATE,
+                            grossTotal: Number.isFinite(gross) ? gross : 0,
+                            pphAmount: amount,
+                            paymentTotal: Number.isFinite(payment) ? payment : ((Number.isFinite(gross) ? gross : 0) - amount)
+                        };
+                    }
+                }
+            }
+
+            // Prioritas 2: cache browser agar cetak ulang pada perangkat yang sama tetap menampilkan PPh.
+            const map = getPph21MetaMap();
+            return map[transactionId] || null;
+        }
+
+        function removeTransactionPph21Meta(transactionId) {
+            const map = getPph21MetaMap();
+            if (map[transactionId]) {
+                delete map[transactionId];
+                localStorage.setItem(PPH21_META_STORAGE_KEY, JSON.stringify(map));
+            }
+        }
 
         // --- All DOM elements that need to be accessed ---
         const views = {
@@ -1462,8 +1767,25 @@
         }
 
         // --- Utility Functions ---
-        const showLoader = () => document.getElementById('loader').classList.remove('hidden');
-        const hideLoader = () => document.getElementById('loader').classList.add('hidden');
+        // Loader ditunda sedikit supaya request cepat tidak menimbulkan kedipan overlay.
+        // Counter menjaga loader tetap benar bila ada lebih dari satu request bersamaan.
+        const showLoader = () => {
+            loaderRequestCount++;
+            if (loaderRequestCount === 1) {
+                clearTimeout(loaderDelayTimer);
+                loaderDelayTimer = setTimeout(() => {
+                    document.getElementById('loader').classList.remove('hidden');
+                }, 140);
+            }
+        };
+        const hideLoader = () => {
+            loaderRequestCount = Math.max(0, loaderRequestCount - 1);
+            if (loaderRequestCount === 0) {
+                clearTimeout(loaderDelayTimer);
+                document.getElementById('loader').classList.add('hidden');
+            }
+        };
+
         const formatCurrency = (amount) => {
             return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
         };
@@ -1474,20 +1796,41 @@
         }
         
         // --- API Communication ---
-        async function apiRequest(action, data = null) {
+        async function apiRequest(action, data = null, requestOptions = {}) {
             if (SCRIPT_URL === "MASUKKAN_URL_BARU_ANDA_DI_SINI" || SCRIPT_URL === "") {
                 alert("PENTING: Harap masukkan URL Google Apps Script Anda di variabel SCRIPT_URL.");
                 return null;
             }
-            showLoader();
+
+            const silent = requestOptions.silent === true;
+            const suppressAlert = requestOptions.suppressAlert === true;
+            const timeoutMs = requestOptions.timeoutMs || 20000;
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+            if (!silent) showLoader();
             try {
                 const bodyPayload = { ...data, action: action };
-                const options = { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(bodyPayload) };
+                const options = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(bodyPayload),
+                    redirect: 'follow',
+                    cache: 'no-store',
+                    signal: controller.signal
+                };
                 const response = await fetch(SCRIPT_URL, options);
-                
-                if (!response.ok) throw new Error(`Server error! status: ${response.status}`);
-                
-                // Parse text first to handle cases where script returns HTML/errors
+
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error('Google Apps Script Web App tidak ditemukan (HTTP 404). URL sudah terpasang, tetapi deployment /exec tidak aktif atau deployment lama telah diganti.');
+                    }
+                    if (response.status === 401 || response.status === 403) {
+                        throw new Error(`Akses Google Apps Script ditolak (HTTP ${response.status}). Pastikan Web App dijalankan sebagai pemilik dan aksesnya diizinkan untuk pengguna aplikasi.`);
+                    }
+                    throw new Error(`Google Apps Script merespons HTTP ${response.status}.`);
+                }
+
                 const responseText = await response.text();
                 let result;
                 try {
@@ -1498,21 +1841,22 @@
                 }
 
                 if (result && result.status === 'error') {
-                    // Mencegah pesan error kosong dengan membaca result.data.message
                     const errorMsg = result.message || (result.data && result.data.message) || "Terjadi error pada server.";
                     throw new Error(errorMsg);
                 }
                 return result.data;
             } catch (error) {
-                console.error('API Request Error:', error);
-                // Matikan alert pada kegagalan fetch RAB History agar aplikasi tidak terblokir saat loading awal
-                if(action !== 'getRabHistory') {
-                    alert(`Terjadi kesalahan: ${error.message}. Periksa konsol untuk detail.`);
+                const normalizedError = error && error.name === 'AbortError'
+                    ? new Error('Koneksi ke server terlalu lama (timeout). Silakan coba lagi.')
+                    : error;
+                console.error('API Request Error:', normalizedError);
+                if (!suppressAlert && action !== 'getRabHistory') {
+                    alert(`Terjadi kesalahan: ${normalizedError.message}. Periksa konsol untuk detail.`);
                 }
-                // Jika error, lemparkan kembali supaya ditangani oleh fungsi pemanggil (agar fallback ke lokal)
-                throw error;
+                throw normalizedError;
             } finally {
-                hideLoader();
+                clearTimeout(timeoutId);
+                if (!silent) hideLoader();
             }
         }
         
@@ -1569,45 +1913,51 @@
         };
 
         // --- Dashboard & Logic for New Stats ---
-        async function loadDashboardData() {
-            showView('dashboard');
-            
+        function renderDashboardPayload(dashboardData) {
+            if (!dashboardData) return;
+
+            const inventory = Array.isArray(dashboardData.inventory) ? dashboardData.inventory : [];
+            fullInventoryData = inventory;
+            inventoryLoadedAt = Date.now();
+            lastDashboardData = dashboardData;
+            dashboardLoadedAt = Date.now();
+
+            document.getElementById('salesToday').textContent = formatCurrency(dashboardData.salesToday || 0);
+            document.getElementById('salesWeek').textContent = formatCurrency(dashboardData.salesWeek || 0);
+            document.getElementById('salesMonth').textContent = formatCurrency(dashboardData.salesMonth || 0);
+            document.getElementById('inventoryCount').textContent = inventory.length;
+
             const stockThreshold = parseInt(localStorage.getItem('pos_stock_threshold')) || 10;
             const expiryThresholdDays = parseInt(localStorage.getItem('pos_expiry_threshold')) || 30;
+            const lowStockItems = inventory.filter(item => Number(item.stok) <= stockThreshold);
+
+            const today = new Date();
+            const warningDate = new Date();
+            warningDate.setDate(today.getDate() + expiryThresholdDays);
+            const expiringItems = inventory.filter(item => {
+                if (!item.expired_date) return false;
+                const expDate = new Date(item.expired_date);
+                return expDate <= warningDate && expDate >= today;
+            }).sort((a, b) => new Date(a.expired_date) - new Date(b.expired_date));
+
+            renderNotifications(lowStockItems, expiringItems);
+            renderSalesChart(dashboardData.last7DaysSales || []);
+            renderInventoryChart([...inventory]);
+        }
+
+        async function loadDashboardData(forceRefresh = false) {
+            showView('dashboard');
+
+            // Jika cache dashboard masih baru, tampilkan langsung tanpa komunikasi server.
+            if (!forceRefresh && lastDashboardData && isFresh(dashboardLoadedAt)) {
+                renderDashboardPayload(lastDashboardData);
+                return;
+            }
 
             try {
-                const [dashboardData, allSales, inventory] = await Promise.all([
-                    apiRequest('getDashboardData'), 
-                    apiRequest('getSales'),
-                    apiRequest('getInventory')
-                ]);
-
-                if (dashboardData && allSales && inventory) {
-                    fullInventoryData = inventory; 
-                    document.getElementById('salesToday').textContent = formatCurrency(dashboardData.salesToday);
-                    document.getElementById('inventoryCount').textContent = inventory.length; 
-
-                    const lowStockItems = inventory.filter(item => item.stok <= stockThreshold);
-                    
-                    const today = new Date();
-                    const warningDate = new Date();
-                    warningDate.setDate(today.getDate() + expiryThresholdDays);
-                    
-                    const expiringItems = inventory.filter(item => {
-                        if (!item.expired_date) return false;
-                        const expDate = new Date(item.expired_date);
-                        return expDate <= warningDate && expDate >= today; 
-                    }).sort((a, b) => new Date(a.expired_date) - new Date(b.expired_date));
-
-                    renderNotifications(lowStockItems, expiringItems);
-                    
-                    const stats = calculatePeriodSales(allSales);
-                    document.getElementById('salesWeek').textContent = formatCurrency(stats.totalWeek);
-                    document.getElementById('salesMonth').textContent = formatCurrency(stats.totalMonth);
-
-                    renderSalesChart(dashboardData.last7DaysSales);
-                    renderInventoryChart(inventory); 
-                }
+                // HANYA 1 REQUEST. Endpoint ini sekarang mengembalikan ringkasan + inventory.
+                const dashboardData = await apiRequest('getDashboardData');
+                if (dashboardData) renderDashboardPayload(dashboardData);
             } catch(e) {
                 console.warn('Dashboard gagal memuat data server.', e);
             }
@@ -1752,11 +2102,21 @@
         }
         
         // --- Inventory Management ---
-        async function loadInventory() {
+        async function loadInventory(forceRefresh = false) {
+            const hasCache = Array.isArray(fullInventoryData) && fullInventoryData.length > 0;
+
+            // Tampilkan cache seketika.
+            if (hasCache) {
+                renderInventoryTable();
+                populateCategoryDropdowns();
+                if (!forceRefresh && isFresh(inventoryLoadedAt)) return;
+            }
+
             try {
-                const inventory = await apiRequest('getInventory');
+                const inventory = await apiRequest('getInventory', null, { silent: hasCache });
                 if (inventory) {
                     fullInventoryData = inventory;
+                    inventoryLoadedAt = Date.now();
                     renderInventoryTable();
                     populateCategoryDropdowns();
                 }
@@ -1870,12 +2230,14 @@
                     const addResult = await apiRequest('addInventory', item);
                     if (addResult) {
                         document.getElementById('inventoryModal').classList.add('hidden');
-                        loadInventory();
+                        invalidateInventoryCache();
+                        loadInventory(true);
                         alert("ID Barang berhasil diperbarui!");
                     }
                 } catch (error) {
                     alert("Terjadi kesalahan saat memperbarui ID: " + error.message);
-                    loadInventory(); 
+                    invalidateInventoryCache();
+                    loadInventory(true); 
                 } finally {
                     hideLoader();
                 }
@@ -1886,18 +2248,28 @@
                     const result = await apiRequest(action, item);
                     if (result) {
                         document.getElementById('inventoryModal').classList.add('hidden');
-                        loadInventory();
+                        invalidateInventoryCache();
+                        loadInventory(true);
                     }
                 } catch(err) {}
             }
         };
 
         // --- POS ---
-        async function loadPosData() {
+        async function loadPosData(forceRefresh = false) {
+            const hasCache = Array.isArray(fullInventoryData) && fullInventoryData.length > 0;
+
+            // Inventory dari dashboard dipakai langsung sehingga POS bisa terbuka instan.
+            if (hasCache) {
+                renderPosOptions();
+                if (!forceRefresh && isFresh(inventoryLoadedAt)) return;
+            }
+
             try {
-                const inventory = await apiRequest('getInventory');
+                const inventory = await apiRequest('getInventory', null, { silent: hasCache });
                 if (inventory) {
-                    fullInventoryData = inventory; 
+                    fullInventoryData = inventory;
+                    inventoryLoadedAt = Date.now();
                     renderPosOptions();
                 }
             } catch(e) {}
@@ -2003,23 +2375,78 @@
                 checkoutBtn.disabled = false;
             }
             cartTotalEl.textContent = formatCurrency(total);
+            updatePph21Preview(total);
             if(window.lucide) lucide.createIcons();
+        }
+
+        function updatePph21Preview(total = null) {
+            const checkbox = document.getElementById('pph21Checkbox');
+            const preview = document.getElementById('pph21Preview');
+            if (!checkbox || !preview) return;
+
+            const grossTotal = total !== null ? Number(total) : cart.reduce((sum, item) => sum + (item.harga * item.qty), 0);
+            if (!checkbox.checked) {
+                preview.classList.add('hidden');
+                return;
+            }
+
+            const pph = calculatePph21(grossTotal);
+            document.getElementById('posInvoiceGross').textContent = formatCurrency(pph.grossTotal);
+            document.getElementById('posPph21Amount').textContent = '- ' + formatCurrency(pph.pphAmount);
+            document.getElementById('posPaymentTotal').textContent = formatCurrency(pph.paymentTotal);
+            preview.classList.remove('hidden');
         }
         
         const handleCheckout = async () => {
             if (cart.length === 0) return;
             const total = cart.reduce((sum, item) => sum + (item.harga * item.qty), 0);
-            const saleData = { items: cart, total: total };
+            const pph21Applied = !!document.getElementById('pph21Checkbox')?.checked;
+            const pph21Meta = pph21Applied ? calculatePph21(total) : null;
+
+            // Field asli `items` dan `total` TETAP dipertahankan untuk kompatibilitas database yang ada.
+            // Metadata PPh ditambahkan sebagai field opsional sehingga backend lama tetap dapat memakai payload lama.
+            const saleData = {
+                items: cart,
+                total: total,
+                ...(pph21Meta ? {
+                    pph21Applied: true,
+                    pph21Rate: PPH21_RATE,
+                    pph21Amount: pph21Meta.pphAmount,
+                    invoiceTotal: pph21Meta.grossTotal,
+                    paymentTotal: pph21Meta.paymentTotal
+                } : {})
+            };
             try {
                 const result = await apiRequest('recordSale', saleData);
                 if (result && result.transactionId) {
-                    showInvoice(result.transactionId, new Date(), cart, total);
-                    cart = []; updateCart(); loadPosData();
+                    if (pph21Meta) saveTransactionPph21Meta(result.transactionId, pph21Meta);
+                    showInvoice(result.transactionId, new Date(), cart, total, pph21Meta);
+
+                    // Backend mengembalikan stok terbaru. Patch cache lokal agar POS tidak perlu
+                    // melakukan request getInventory lagi setelah checkout.
+                    if (Array.isArray(result.updatedStocks)) {
+                        result.updatedStocks.forEach(update => {
+                            const invItem = fullInventoryData.find(item => String(item.kode_barang) === String(update.kode_barang));
+                            if (invItem) invItem.stok = Number(update.stok);
+                        });
+                        inventoryLoadedAt = Date.now();
+                    } else {
+                        inventoryLoadedAt = 0;
+                    }
+                    invalidateSalesCache();
+                    dashboardLoadedAt = 0;
+                    lastDashboardData = null;
+
+                    cart = [];
+                    const pphCheckbox = document.getElementById('pph21Checkbox');
+                    if (pphCheckbox) pphCheckbox.checked = false;
+                    updateCart();
+                    renderPosOptions();
                 }
             } catch(e) {}
         };
 
-        function showInvoice(id, date, items, total) {
+        function showInvoice(id, date, items, total, pph21Meta = null) {
             const savedLogoUrl = localStorage.getItem('pos_logo_url');
             const invoiceLogo = document.getElementById('invoiceLogo');
             if(savedLogoUrl) {
@@ -2039,16 +2466,47 @@
                 const row = `<tr class="border-b border-dashed border-slate-200"><td class="py-2 text-left">${item.nama_barang}</td><td class="py-2 text-center">${item.qty}</td><td class="py-2 text-right">${formatCurrency(item.harga)}</td><td class="py-2 text-right font-bold">${formatCurrency(subtotal)}</td></tr>`;
                 invoiceItemsBody.insertAdjacentHTML('beforeend', row);
             });
+            const invoiceNormalTotal = document.getElementById('invoiceNormalTotal');
+            const invoicePphBreakdown = document.getElementById('invoicePphBreakdown');
             document.getElementById('invoiceTotal').textContent = formatCurrency(total);
+
+            if (pph21Meta && pph21Meta.applied) {
+                const normalized = {
+                    applied: true,
+                    rate: Number(pph21Meta.rate) || PPH21_RATE,
+                    grossTotal: Number(pph21Meta.grossTotal) || Number(total) || 0,
+                    pphAmount: Number(pph21Meta.pphAmount) || 0,
+                    paymentTotal: Number(pph21Meta.paymentTotal)
+                };
+                if (!Number.isFinite(normalized.paymentTotal)) normalized.paymentTotal = normalized.grossTotal - normalized.pphAmount;
+
+                document.getElementById('invoiceGrossTotal').textContent = formatCurrency(normalized.grossTotal);
+                document.getElementById('invoicePph21Amount').textContent = '- ' + formatCurrency(normalized.pphAmount);
+                document.getElementById('invoicePaymentTotal').textContent = formatCurrency(normalized.paymentTotal);
+                invoiceNormalTotal.classList.add('hidden');
+                invoicePphBreakdown.classList.remove('hidden');
+            } else {
+                invoiceNormalTotal.classList.remove('hidden');
+                invoicePphBreakdown.classList.add('hidden');
+            }
+
             document.getElementById('invoiceModal').classList.remove('hidden');
             applyPrintStyles();
         }
 
-        async function loadSalesHistory() {
+        async function loadSalesHistory(forceRefresh = false) {
+            const hasCache = Array.isArray(fullSalesData) && fullSalesData.length > 0;
+
+            if (hasCache) {
+                renderHistoryTableSales(fullSalesData);
+                if (!forceRefresh && isFresh(salesLoadedAt)) return;
+            }
+
             try {
-                const sales = await apiRequest('getSales');
+                const sales = await apiRequest('getSales', null, { silent: hasCache });
                 if (sales) {
                     fullSalesData = sales;
+                    salesLoadedAt = Date.now();
                     renderHistoryTableSales(fullSalesData);
                 }
             } catch(e) {}
@@ -2116,7 +2574,12 @@
                 const total = transactionItems.reduce((sum, item) => sum + parseFloat(item.total), 0);
                 const date = new Date(transactionItems[0].tanggal);
                 const itemsForInvoice = transactionItems.map(item => ({ nama_barang: item.item, qty: item.qty, harga: item.total / item.qty }));
-                showInvoice(transactionId, date, itemsForInvoice, total);
+                const pph21Meta = getTransactionPph21Meta(transactionId, transactionItems);
+                if (pph21Meta && (!pph21Meta.grossTotal || pph21Meta.grossTotal <= 0)) {
+                    pph21Meta.grossTotal = total;
+                    pph21Meta.paymentTotal = total - (Number(pph21Meta.pphAmount) || Math.round(total * PPH21_RATE));
+                }
+                showInvoice(transactionId, date, itemsForInvoice, total, pph21Meta);
             } else { alert('ID Transaksi tidak ditemukan.'); }
         };
 
@@ -2125,8 +2588,10 @@
                 try {
                     const result = await apiRequest('deleteTransaction', { transactionId });
                     if (result && result.success) {
+                        removeTransactionPph21Meta(transactionId);
                         alert('Transaksi berhasil dihapus.');
-                        loadSalesHistory();
+                        invalidateSalesCache();
+                        loadSalesHistory(true);
                     }
                 } catch(e) {}
             }
@@ -2134,8 +2599,12 @@
 
         const handleExportInventory = async () => {
             try {
-                const inventory = await apiRequest('getInventory');
+                const inventory = (fullInventoryData.length > 0 && isFresh(inventoryLoadedAt))
+                    ? fullInventoryData
+                    : await apiRequest('getInventory');
                 if(inventory && inventory.length > 0) {
+                    fullInventoryData = inventory;
+                    inventoryLoadedAt = Date.now();
                     const ws = XLSX.utils.json_to_sheet(inventory);
                     const wb = XLSX.utils.book_new();
                     XLSX.utils.book_append_sheet(wb, ws, "Inventory");
@@ -2262,6 +2731,40 @@
             document.getElementById('rabPrintModal').classList.remove('hidden');
         }
 
+        // --- AUTO INVOICE FROM RAB ---
+        function createInvoiceFromRab(rabData) {
+            if (!rabData || !Array.isArray(rabData.items) || rabData.items.length === 0) {
+                alert('RAB belum memiliki item untuk dibuat menjadi invoice.');
+                return;
+            }
+
+            const invoiceItems = rabData.items.map(item => ({
+                nama_barang: item.name || item.nama_barang || 'Item',
+                qty: Number(item.qty) || 0,
+                harga: Number(item.price ?? item.harga) || 0
+            }));
+
+            const invoiceTotal = invoiceItems.reduce((sum, item) => sum + (item.qty * item.harga), 0);
+            const cleanRabNumber = String(rabData.number || generateRabNumber()).replace(/^RAB-/i, '');
+            const invoiceId = `INV-RAB-${cleanRabNumber}`;
+
+            // Invoice hasil konversi RAB tidak otomatis mencatat penjualan / mengurangi stok.
+            // Ini hanya membuat invoice siap cetak dari data RAB yang sudah tersimpan.
+            showInvoice(invoiceId, new Date(), invoiceItems, invoiceTotal, null);
+        }
+
+        function getCurrentRabDataForInvoice() {
+            if (!Array.isArray(rabCart) || rabCart.length === 0) return null;
+            const number = document.getElementById('rabNumber').value || generateRabNumber();
+            return {
+                number: number,
+                title: document.getElementById('rabTitle').value || 'Dokumen Rencana Anggaran Biaya',
+                date: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }),
+                items: [...rabCart],
+                total: rabCart.reduce((sum, item) => sum + Number(item.total || 0), 0)
+            };
+        }
+
         // Render History Table for RAB
         function renderRabHistoryTable() {
             const tbody = document.getElementById('rabHistoryTableBody');
@@ -2283,6 +2786,7 @@
                     <td class="py-3 px-5 font-bold text-slate-800 text-sm text-right">${formatCurrency(rab.total)}</td>
                     <td class="py-3 px-5 text-center">
                         <div class="flex justify-center gap-2">
+                            <button class="create-invoice-rab-btn px-3 py-1.5 bg-slate-900 border border-slate-900 text-white rounded-lg text-xs hover:bg-slate-800 font-semibold shadow-sm transition flex items-center gap-1.5" data-number="${rab.number}"><i data-lucide="receipt-text" class="w-3.5 h-3.5 pointer-events-none"></i> Buat Invoice</button>
                             <button class="reprint-rab-btn px-3 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs hover:bg-slate-50 hover:text-primary-600 font-semibold shadow-sm transition" data-number="${rab.number}">Download PDF</button>
                             <button class="delete-rab-btn px-3 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs hover:bg-red-50 hover:text-red-600 font-semibold shadow-sm transition" data-number="${rab.number}">Hapus</button>
                         </div>
@@ -2290,6 +2794,7 @@
                 `;
                 tbody.appendChild(tr);
             });
+            if(window.lucide) lucide.createIcons();
         }
 
 
@@ -2385,7 +2890,7 @@
                 if (confirm('Apakah Anda yakin ingin menghapus barang ini?')) { 
                     try {
                         const result = await apiRequest('deleteInventory', { kode_barang: code });
-                        if (result) loadInventory(); 
+                        if (result) { invalidateInventoryCache(); loadInventory(true); } 
                     } catch(err){}
                 }
             }
@@ -2393,6 +2898,7 @@
 
         document.getElementById('posForm').addEventListener('submit', handleAddToCart);
         document.getElementById('checkoutBtn').addEventListener('click', handleCheckout);
+        document.getElementById('pph21Checkbox').addEventListener('change', () => updatePph21Preview());
         document.getElementById('cartItems').addEventListener('click', e => { 
             const btn = e.target.closest('.remove-cart-item');
             if (btn) { const index = parseInt(btn.dataset.index); cart.splice(index, 1); updateCart(); } 
@@ -2479,6 +2985,16 @@
             showRabPrintPreview(rabData);
         });
 
+        // Buat invoice langsung dari RAB yang sedang disusun
+        document.getElementById('createRabInvoiceBtnTop').addEventListener('click', () => {
+            const rabData = getCurrentRabDataForInvoice();
+            if (!rabData) {
+                alert('Tambahkan minimal 1 item ke RAB sebelum membuat invoice.');
+                return;
+            }
+            createInvoiceFromRab(rabData);
+        });
+
         // History RAB Table Event Listeners
         document.getElementById('rabHistoryTableBody').addEventListener('click', async (e) => {
             const btn = e.target.closest('button');
@@ -2486,6 +3002,10 @@
 
             const number = btn.dataset.number;
 
+            if (btn.classList.contains('create-invoice-rab-btn')) {
+                const rab = rabHistory.find(r => r.number === number);
+                if (rab) createInvoiceFromRab(rab);
+            }
             if (btn.classList.contains('reprint-rab-btn')) {
                 const rab = rabHistory.find(r => r.number === number);
                 if (rab) showRabPrintPreview(rab);
