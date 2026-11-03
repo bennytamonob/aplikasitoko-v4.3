@@ -6,7 +6,7 @@
     <title>JIREH CREATIONS — Smart POS</title>
     
     <!-- Favicon / Logo Browser Tab -->
-    <link rel="icon" type="image/png" href="https://ibb.co.com/xqssNCfh">
+    <link id="pageFavicon" rel="icon" type="image/png" href="https://i.ibb.co/3mssnrM1/Salinan-dari-Logo-Jireh-Creations-logo-only.png">
     
     <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -33,7 +33,6 @@
                         sans: ['"Plus Jakarta Sans"', 'sans-serif'],
                     },
                     colors: {
-                        // Tokopedia-like Green Palette
                         primary: {
                             50: '#f0fdf4',
                             100: '#dcfce7',
@@ -41,13 +40,13 @@
                             300: '#86efac',
                             400: '#4ade80',
                             500: '#22c55e',
-                            600: '#03AC0E', // Tokopedia Green approx
+                            600: '#03AC0E',
                             700: '#15803d',
                             800: '#166534',
                             900: '#14532d',
                         },
                         secondary: {
-                            900: '#1e293b', // Slate 900 for contrasts
+                            900: '#1e293b',
                         }
                     },
                     boxShadow: {
@@ -63,7 +62,7 @@
         /* Custom Styles & Animations */
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #f3f4f6; /* Gray 100 */
+            background-color: #f3f4f6;
             color: #334155;
         }
         
@@ -164,8 +163,8 @@
                 padding: 0 !important;
                 height: 100%;
                 width: 100%;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
             /* Hide everything by default */
             body * { 
@@ -195,21 +194,33 @@
                 margin: 0 !important;
                 box-shadow: none !important; 
                 border: none !important;
-                padding: 10mm 5mm; /* Give internal padding */
+                padding: 10mm 5mm;
             }
             .no-print { display: none !important; }
             #invoice-print-area { padding: 0 !important; }
 
             /* Paksa ukuran logo pada saat print dan buang filter abu-abu */
             #invoiceLogo {
-                width: 45px !important;
-                height: 45px !important;
-                max-width: 45px !important;
-                max-height: 45px !important;
+                width: 48px !important;
+                height: 48px !important;
+                max-width: 48px !important;
+                max-height: 48px !important;
                 object-fit: contain !important;
                 filter: none !important;
-                -webkit-filter: grayscale(0) !important;
+                -webkit-filter: none !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
+        }
+
+        /* Helper Classes to Prevent Bad Page Breaks in PDF */
+        .avoid-break {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+        }
+        #printRabItems tr {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
         }
     </style>
     <style id="print-style-rules"></style>
@@ -217,8 +228,6 @@
 <style id="jireh-redesign-2026">
 /* =========================================================
    JIREH CREATIONS POS — UI REDESIGN 2026
-   Visual-only override. Existing IDs, JS logic, API contract,
-   and database actions are intentionally untouched.
    ========================================================= */
 :root{
   --jc-ink:#0b1220;
@@ -349,7 +358,6 @@ table tbody td{border-color:#f2f4f7!important}
 #invoicePphBreakdown .invoice-total-value{text-align:right;color:#0f172a;font-size:12px;font-weight:700;white-space:nowrap}
 #invoicePphBreakdown .total-payment .invoice-total-label,#invoicePphBreakdown .total-payment .invoice-total-value{font-size:14px;color:#0f172a;font-weight:800}
 
-
 /* RAB */
 #rabGrandTotal{color:#0f766e!important}
 #rabView .card:nth-of-type(2),#rabView .card:nth-of-type(3){border-top:3px solid rgba(14,165,168,.22)!important}
@@ -365,7 +373,7 @@ table tbody td{border-color:#f2f4f7!important}
 #inventoryModal #modalTitle{color:#fff!important}
 #inventoryModal #closeModalBtn{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.12)!important;color:#fff!important}
 
-/* Action buttons — compact enterprise style */
+/* Action buttons */
 button{transition:all .18s ease}
 button:active{transform:translateY(1px)}
 #addItemBtn,#printRabBtnTop{background:linear-gradient(135deg,var(--jc-cyan),#0f766e)!important;border-radius:10px!important}
@@ -388,7 +396,6 @@ button:active{transform:translateY(1px)}
   .card{border-radius:14px!important}
   #loginPage>div{height:auto!important;min-height:520px!important;border-radius:20px!important}
 }
-
 </style>
 </head>
 <body class="text-slate-600 antialiased bg-slate-50">
@@ -417,9 +424,10 @@ button:active{transform:translateY(1px)}
                 <div class="absolute -top-24 -right-24 w-64 h-64 bg-primary-400 rounded-full blur-3xl opacity-50"></div>
                 
                 <div class="relative z-10 flex flex-col justify-center h-full">
-                    <!-- Updated Jireh Full Logo -->
                     <div class="w-64 max-w-full h-auto mb-8 bg-white/90 p-4 rounded-2xl shadow-xl backdrop-blur-md">
-                        <img src="https://ibb.co.com/xqssNCfh" 
+                        <img data-brand-logo="full" src="https://i.ibb.co/23K7yckN/Logo-Jireh-Creations-full.png" 
+                             referrerpolicy="no-referrer"
+                             onerror="handleLogoError(this, 'full')"
                              alt="Logo Perusahaan" 
                              class="w-full h-auto object-contain drop-shadow-sm">
                     </div>
@@ -438,9 +446,10 @@ button:active{transform:translateY(1px)}
             <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center bg-white relative">
                 <div class="max-w-sm mx-auto w-full">
                     <div class="md:hidden mb-8 text-center">
-                        <!-- Updated Mobile Logo -->
                         <div class="w-40 h-auto p-3 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-slate-200">
-                             <img src="https://ibb.co.com/xqssNCfh" 
+                             <img data-brand-logo="full" src="https://i.ibb.co/23K7yckN/Logo-Jireh-Creations-full.png" 
+                                  referrerpolicy="no-referrer"
+                                  onerror="handleLogoError(this, 'full')"
                                   alt="Logo Perusahaan" 
                                   class="w-full h-auto object-contain">
                         </div>
@@ -482,6 +491,25 @@ button:active{transform:translateY(1px)}
         </div>
     </div>
 
+    <!-- Custom UI Notification & Confirmation Modal (Replaces alert/confirm) -->
+    <div id="uiDialogModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[10000] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-100">
+            <div class="flex items-start gap-3">
+                <div class="p-2 rounded-xl bg-teal-50 text-teal-700 shrink-0">
+                    <i data-lucide="info" class="w-5 h-5"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h4 id="uiDialogTitle" class="font-bold text-slate-800 text-base">Informasi Sistem</h4>
+                    <p id="uiDialogMessage" class="text-sm text-slate-600 whitespace-pre-line mt-1.5 leading-relaxed"></p>
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 mt-6 pt-4 border-t border-slate-100">
+                <button type="button" id="uiDialogCancelBtn" class="hidden px-4 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-semibold">Batal</button>
+                <button type="button" id="uiDialogOkBtn" class="px-5 py-2 rounded-xl bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold shadow-sm">OK</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Main App Layout -->
     <div id="appPage" class="hidden min-h-screen flex bg-slate-50">
         
@@ -493,9 +521,8 @@ button:active{transform:translateY(1px)}
             <!-- Brand -->
             <div class="h-20 flex items-center px-6 border-b border-slate-100">
                 <div class="flex items-center gap-3">
-                    <!-- Updated Jireh Only-Logo -->
                     <div class="bg-slate-50 p-1.5 rounded-lg shadow-sm border border-slate-100">
-                        <img src="https://i.ibb.co.com/3mssnrM1/Salinan-dari-Logo-Jireh-Creations-logo-only.png" alt="Logo" class="w-8 h-8 object-contain">
+                        <img data-brand-logo="only" src="https://i.ibb.co/3mssnrM1/Salinan-dari-Logo-Jireh-Creations-logo-only.png" referrerpolicy="no-referrer" onerror="handleLogoError(this, 'only')" alt="Logo" class="w-8 h-8 object-contain">
                     </div>
                     <div>
                         <h1 class="text-lg font-bold text-slate-800 tracking-tight leading-none">JIREH CREATIONS</h1>
@@ -516,7 +543,6 @@ button:active{transform:translateY(1px)}
                 <a href="#" id="nav-inventory" class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm">
                     <i data-lucide="package" class="w-5 h-5"></i> Data Barang
                 </a>
-                <!-- New Menu RAB -->
                 <a href="#" id="nav-rab" class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm">
                     <i data-lucide="file-text" class="w-5 h-5"></i> Create RAB
                 </a>
@@ -559,8 +585,7 @@ button:active{transform:translateY(1px)}
                     <button id="mobileMenuBtn" class="p-2 -ml-2 text-slate-500 hover:bg-slate-100 rounded-lg">
                         <i data-lucide="menu" class="w-6 h-6"></i>
                     </button>
-                    <!-- Small Logo for Mobile Header -->
-                    <img src="https://i.ibb.co.com/3mssnrM1/Salinan-dari-Logo-Jireh-Creations-logo-only.png" alt="Logo" class="w-6 h-6 object-contain hidden sm:block">
+                    <img data-brand-logo="only" src="https://i.ibb.co/3mssnrM1/Salinan-dari-Logo-Jireh-Creations-logo-only.png" referrerpolicy="no-referrer" onerror="handleLogoError(this, 'only')" alt="Logo" class="w-6 h-6 object-contain hidden sm:block">
                     <span class="font-bold text-slate-800">JIREH CREATIONS</span>
                 </div>
                 
@@ -1006,7 +1031,7 @@ button:active{transform:translateY(1px)}
                 <div id="settingsView" class="hidden space-y-6 max-w-4xl mx-auto">
                     <div>
                         <h2 class="text-2xl font-bold text-slate-800">Pengaturan Toko</h2>
-                        <p class="text-slate-500 text-sm">Sesuaikan preferensi sistem.</p>
+                        <p class="text-slate-500 text-sm">Sesuaikan preferensi sistem dan logo dari Google Drive.</p>
                     </div>
 
                     <div class="card divide-y divide-slate-100">
@@ -1014,14 +1039,14 @@ button:active{transform:translateY(1px)}
                         <div class="p-6 md:p-8">
                             <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
                                 <div class="p-1.5 bg-primary-100 rounded text-primary-600"><i data-lucide="printer" class="w-5 h-5"></i></div>
-                                Tampilan Struk / Invoice
+                                Tampilan Logo & Struk / Invoice
                             </h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-2">Upload Logo Toko</label>
+                                    <label class="block text-sm font-medium text-slate-700 mb-2">Upload / Link Logo Toko (Google Drive)</label>
                                     <div class="flex items-start gap-4">
-                                        <div class="h-24 w-24 bg-slate-50 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden relative group">
-                                            <img id="logoPreview" src="#" alt="Preview" class="hidden w-full h-full object-contain z-10 bg-white">
+                                        <div class="h-24 w-24 bg-slate-50 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden relative group shrink-0">
+                                            <img id="logoPreview" src="#" referrerpolicy="no-referrer" onerror="handleLogoError(this, 'only')" alt="Preview" class="hidden w-full h-full object-contain z-10 bg-white p-1">
                                             <span id="logoPlaceholder" class="text-center">
                                                 <i data-lucide="image" class="w-6 h-6 text-slate-300 mx-auto mb-1"></i>
                                                 <span class="text-[10px] text-slate-400 block">No Logo</span>
@@ -1030,7 +1055,7 @@ button:active{transform:translateY(1px)}
                                         <div class="flex-1 space-y-3">
                                             <label class="block">
                                                 <span class="sr-only">Choose file</span>
-                                                <input type="file" id="logoUpload" accept="image/png" class="block w-full text-sm text-slate-500
+                                                <input type="file" id="logoUpload" accept="image/png,image/jpeg,image/webp" class="block w-full text-sm text-slate-500
                                                 file:mr-4 file:py-2 file:px-4
                                                 file:rounded-full file:border-0
                                                 file:text-xs file:font-semibold
@@ -1039,10 +1064,14 @@ button:active{transform:translateY(1px)}
                                                 "/>
                                             </label>
                                             <div class="relative">
-                                                <input type="text" id="logoUrlInput" placeholder="Atau paste URL gambar..." class="form-input w-full pl-8 pr-3 py-2 rounded-lg text-xs">
+                                                <input type="text" id="logoUrlInput" placeholder="Paste Link Google Drive Logo Kecil (Sidebar/Struk)..." class="form-input w-full pl-8 pr-3 py-2 rounded-lg text-xs">
                                                 <i data-lucide="link" class="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-slate-400"></i>
                                             </div>
-                                            <p class="text-[10px] text-slate-400">Format: PNG, JPG (Transparan disarankan).</p>
+                                            <div class="relative">
+                                                <input type="text" id="logoFullUrlInput" placeholder="Paste Link Google Drive Logo Full (Login/RAB)..." class="form-input w-full pl-8 pr-3 py-2 rounded-lg text-xs">
+                                                <i data-lucide="image" class="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-slate-400"></i>
+                                            </div>
+                                            <p class="text-[10px] text-slate-400 leading-relaxed">Bisa langsung paste link share Google Drive (<span class="font-mono">drive.google.com/file/d/...</span>). Pastikan akses file di Drive sudah <b>"Siapa saja yang memiliki link"</b>.</p>
                                         </div>
                                     </div>
                                 </div>
@@ -1123,11 +1152,9 @@ button:active{transform:translateY(1px)}
             <form id="inventoryForm" class="p-6 space-y-5">
                 <input type="hidden" id="originalItemCode">
 
-                <!-- ID/Barcode -->
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-1">Kode Barang / Barcode</label>
                     <div class="relative group">
-                        <!-- Ensure NO readonly here -->
                         <input type="text" id="itemCode" class="form-input w-full px-4 py-2.5 pr-10 rounded-xl" placeholder="Scan atau ketik kode unik...">
                         <button type="button" onclick="startScanner('itemCode')" class="absolute right-2 top-2 p-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-600 transition" title="Scan">
                             <i data-lucide="camera" class="w-4 h-4"></i>
@@ -1177,7 +1204,6 @@ button:active{transform:translateY(1px)}
 
     <!-- MODAL: Invoice -->
     <div id="invoiceModal" class="hidden print-section fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[60] flex flex-col items-center justify-center p-4">
-        <!-- Controls -->
         <div class="w-full max-w-xl mb-4 flex justify-between items-center no-print">
             <span class="text-white font-bold text-lg drop-shadow-md">Invoice Preview</span>
             <div class="flex gap-3">
@@ -1190,23 +1216,18 @@ button:active{transform:translateY(1px)}
             </div>
         </div>
 
-        <!-- Scrollable Paper Area -->
         <div class="w-full h-full max-h-[80vh] overflow-y-auto flex items-start justify-center" id="invoiceScrollContainer">
-            <!-- The Paper -->
             <div id="invoiceCard" class="bg-white text-slate-900 shadow-2xl mx-auto overflow-hidden">
                 <div id="invoice-print-area" class="p-8 font-mono">
-                    <!-- Header -->
                     <div class="text-center mb-6">
-                        <div class="flex justify-center mb-4">
-                             <!-- Hapus class grayscale dan tetapkan width agar tidak membesar saat diprint -->
-                             <img id="invoiceLogo" src="#" alt="Logo" class="hidden w-16 h-16 object-contain"/>
+                        <div class="flex justify-center mb-3">
+                             <img id="invoiceLogo" data-brand-logo="only" src="#" referrerpolicy="no-referrer" onerror="handleLogoError(this, 'only')" alt="Logo" style="width: 48px; height: 48px; max-width: 48px; max-height: 48px; object-fit: contain; filter: none; -webkit-filter: none;" class="hidden w-12 h-12 object-contain mx-auto"/>
                         </div>
                         <h1 class="text-xl font-bold text-slate-900 uppercase tracking-widest print:text-lg">JIREH CREATIONS</h1>
                         <p class="text-xs text-slate-500 uppercase tracking-wide mt-1">Struk Penjualan Resmi</p>
                         <div class="w-full border-b border-dashed border-slate-300 my-4"></div>
                     </div>
 
-                    <!-- Meta -->
                     <div class="flex justify-between items-end mb-4 text-xs">
                         <div>
                             <span class="block text-slate-400">ID TRX</span>
@@ -1218,7 +1239,6 @@ button:active{transform:translateY(1px)}
                         </div>
                     </div>
 
-                    <!-- Table -->
                     <div class="mb-6">
                         <table class="w-full text-xs">
                             <thead>
@@ -1235,16 +1255,13 @@ button:active{transform:translateY(1px)}
                         </table>
                     </div>
 
-                    <!-- Totals -->
                     <div class="flex justify-end mb-8">
                         <div class="w-full border-t border-slate-800 border-dashed pt-4">
-                            <!-- Tampilan normal: hanya muncul jika PPh 21 TIDAK dicentang -->
                             <div id="invoiceNormalTotal" class="text-right">
                                 <span class="text-slate-500 text-xs font-bold mr-4">TOTAL BAYAR</span>
                                 <span id="invoiceTotal" class="text-xl font-bold text-slate-900">Rp 0</span>
                             </div>
 
-                            <!-- Tampilan PPh 21: hanya muncul jika checkbox PPh 21 dicentang pada POS -->
                             <div id="invoicePphBreakdown" class="hidden">
                                 <div class="invoice-total-row">
                                     <span class="invoice-total-label">Nilai Invoice</span>
@@ -1262,7 +1279,6 @@ button:active{transform:translateY(1px)}
                         </div>
                     </div>
 
-                    <!-- Footer -->
                     <div class="text-center space-y-3">
                         <div class="text-xs text-slate-600 mb-4 border border-dashed border-slate-300 p-2 rounded">
                             <p class="font-bold mb-1">Pembayaran dapat di transfer pada no rekening berikut :</p>
@@ -1293,21 +1309,17 @@ button:active{transform:translateY(1px)}
         </div>
         
         <div class="w-full overflow-x-auto flex justify-center pb-12">
-            <!-- Fixed A4 Size Wrapper for Exact PDF Capture -->
             <div id="rabPrintCard" class="bg-white text-slate-900 shadow-2xl relative w-[210mm] min-h-[297mm] pt-[5mm] px-[20mm] pb-[20mm] shrink-0">
                 
-                <!-- Logo Top (Full Logo) -->
                 <div class="flex justify-center mb-4">
-                    <img src="https://i.ibb.co.com/23K7yckN/Logo-Jireh-Creations-full.png" alt="Logo Jireh Creations" class="h-20 object-contain">
+                    <img data-brand-logo="full" src="https://i.ibb.co/23K7yckN/Logo-Jireh-Creations-full.png" referrerpolicy="no-referrer" onerror="handleLogoError(this, 'full')" alt="Logo Jireh Creations" class="h-20 object-contain">
                 </div>
 
-                <!-- Document Header -->
                 <div class="text-center mb-8 border-b-2 border-slate-800 pb-6">
                     <h1 class="text-2xl font-extrabold text-slate-900 uppercase tracking-widest mb-2">Rencana Anggaran Biaya</h1>
                     <h2 id="printRabTitle" class="text-lg font-semibold text-slate-700">-</h2>
                 </div>
 
-                <!-- Meta Info -->
                 <div class="flex justify-between mb-6 text-sm">
                     <div class="space-y-1">
                         <p><span class="font-bold w-24 inline-block">Nomor RAB</span>: <span id="printRabNumber">-</span></p>
@@ -1315,7 +1327,6 @@ button:active{transform:translateY(1px)}
                     </div>
                 </div>
 
-                <!-- Main Table -->
                 <table class="w-full text-sm border-collapse mb-8">
                     <thead class="bg-slate-100">
                         <tr>
@@ -1328,7 +1339,7 @@ button:active{transform:translateY(1px)}
                         </tr>
                     </thead>
                     <tbody id="printRabItems">
-                        <!-- Items appended dynamically via JS -->
+                        <!-- Dynamic -->
                     </tbody>
                     <tfoot>
                         <tr class="bg-slate-50 font-bold avoid-break">
@@ -1339,23 +1350,18 @@ button:active{transform:translateY(1px)}
                     </tfoot>
                 </table>
 
-                <!-- Signatures -->
-                <!-- Added .avoid-break to prevent this block from being split -->
                 <div class="flex justify-between mt-16 pt-8 avoid-break">
-                    <!-- Klien / Pelanggan -->
                     <div class="text-center w-48">
                         <p class="text-sm mb-2">Menyetujui,</p>
-                        <div class="h-14"></div> <!-- Area seimbang untuk tanda tangan -->
-                        <div class="h-4 mb-1"></div> <!-- Area seimbang untuk nama -->
+                        <div class="h-14"></div>
+                        <div class="h-4 mb-1"></div>
                         <div class="border-b border-slate-800 w-full mb-1"></div>
                         <p class="text-xs uppercase font-bold text-slate-600">Klien / Pelanggan</p>
                     </div>
-                    <!-- JIREH CREATIONS -->
                     <div class="text-center w-48 flex flex-col items-center">
                         <p class="text-sm mb-2 w-full">Hormat Kami,</p>
                         <div class="h-14 w-full flex justify-center items-end relative">
-                            <!-- Gambar Tanda Tangan diperkecil -->
-                            <img src="https://i.ibb.co.com/9m0N6Nw2/tdt-benny.png" alt="Tanda Tangan" class="h-12 object-contain mix-blend-multiply absolute -bottom-1">
+                            <img src="https://i.ibb.co/9m0N6Nw2/tdt-benny.png" referrerpolicy="no-referrer" onerror="this.style.display='none'" alt="Tanda Tangan" class="h-12 object-contain mix-blend-multiply absolute -bottom-1">
                         </div>
                         <p class="text-xs font-bold text-slate-800 h-4 mb-1 w-full leading-none flex items-end justify-center z-10 relative">Benyamin Tamonob</p>
                         <div class="border-b border-slate-800 w-full mb-1"></div>
@@ -1368,7 +1374,7 @@ button:active{transform:translateY(1px)}
     </div>
 
 
-    <!-- LOGIC SCRIPT (Full Data Restored) -->
+    <!-- LOGIC SCRIPT -->
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhhY368Xv72by7jF8fFT-mJY278qJCUs_ZjTtICfLSP7cyUk2gtMcMS_Z70vV4czqb/exec";
 
@@ -1383,7 +1389,7 @@ button:active{transform:translateY(1px)}
         let inventoryChartInstance = null;
         let cart = [];
         let rabCart = []; 
-        let rabHistory = []; // Diubah: Tidak langsung load dari localStorage agar sinkron dengan database
+        let rabHistory = [];
         let fullInventoryData = [];
         let fullSalesData = []; 
         let displayedSalesData = [];
@@ -1391,9 +1397,6 @@ button:active{transform:translateY(1px)}
         let html5QrcodeScanner = null;
 
         // --- PERFORMANCE CACHE ---
-        // Data yang baru diambil dari Apps Script dipakai ulang selama 30 detik.
-        // Ini membuat perpindahan Dashboard -> POS -> Data Barang terasa instan
-        // dan mengurangi request berulang ke Spreadsheet.
         const DATA_CACHE_TTL_MS = 30000;
         let inventoryLoadedAt = 0;
         let salesLoadedAt = 0;
@@ -1447,7 +1450,6 @@ button:active{transform:translateY(1px)}
         }
 
         function getTransactionPph21Meta(transactionId, transactionItems = []) {
-            // Prioritas 1: bila backend suatu saat mengembalikan metadata PPh pada baris transaksi.
             const source = transactionItems.find(row => row && (row.pph21Applied !== undefined || row.pph21_applied !== undefined || row.pph21Amount !== undefined || row.pph21_amount !== undefined));
             if (source) {
                 const appliedRaw = source.pph21Applied ?? source.pph21_applied;
@@ -1467,8 +1469,6 @@ button:active{transform:translateY(1px)}
                     }
                 }
             }
-
-            // Prioritas 2: cache browser agar cetak ulang pada perangkat yang sama tetap menampilkan PPh.
             const map = getPph21MetaMap();
             return map[transactionId] || null;
         }
@@ -1481,7 +1481,7 @@ button:active{transform:translateY(1px)}
             }
         }
 
-        // --- All DOM elements that need to be accessed ---
+        // --- All DOM elements ---
         const views = {
             dashboard: document.getElementById('dashboardView'),
             inventory: document.getElementById('inventoryView'),
@@ -1500,14 +1500,13 @@ button:active{transform:translateY(1px)}
             settings: document.getElementById('nav-settings')
         };
         
-        // Search & Filter elements
         const inventorySearch = document.getElementById('inventorySearch');
         const inventoryFilter = document.getElementById('inventoryFilter');
         const posSearch = document.getElementById('posSearch');
         
-        // Settings elements
         const logoUpload = document.getElementById('logoUpload');
         const logoUrlInput = document.getElementById('logoUrlInput'); 
+        const logoFullUrlInput = document.getElementById('logoFullUrlInput');
         const logoPreview = document.getElementById('logoPreview');
         const logoPlaceholder = document.getElementById('logoPlaceholder'); 
         const paperSize = document.getElementById('paperSize');
@@ -1515,6 +1514,146 @@ button:active{transform:translateY(1px)}
         const expiryThresholdInput = document.getElementById('expiryThreshold');
         const saveSettingsBtn = document.getElementById('saveSettingsBtn');
         const manageCategoriesBtn = document.getElementById('manageCategoriesBtn');
+
+        // --- NON-BLOCKING UI DIALOG HELPERS ---
+        function showNotice(message, title = 'Informasi Sistem') {
+            const modal = document.getElementById('uiDialogModal');
+            const titleEl = document.getElementById('uiDialogTitle');
+            const msgEl = document.getElementById('uiDialogMessage');
+            const cancelBtn = document.getElementById('uiDialogCancelBtn');
+            const okBtn = document.getElementById('uiDialogOkBtn');
+            if (!modal) return;
+            titleEl.textContent = title;
+            msgEl.textContent = message;
+            cancelBtn.classList.add('hidden');
+            modal.classList.remove('hidden');
+            if (window.lucide) lucide.createIcons();
+            okBtn.onclick = () => modal.classList.add('hidden');
+        }
+
+        function askConfirmation(message, title = 'Konfirmasi Tindakan') {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('uiDialogModal');
+                const titleEl = document.getElementById('uiDialogTitle');
+                const msgEl = document.getElementById('uiDialogMessage');
+                const cancelBtn = document.getElementById('uiDialogCancelBtn');
+                const okBtn = document.getElementById('uiDialogOkBtn');
+                if (!modal) { resolve(true); return; }
+                titleEl.textContent = title;
+                msgEl.textContent = message;
+                cancelBtn.classList.remove('hidden');
+                modal.classList.remove('hidden');
+                if (window.lucide) lucide.createIcons();
+                okBtn.onclick = () => { modal.classList.add('hidden'); resolve(true); };
+                cancelBtn.onclick = () => { modal.classList.add('hidden'); resolve(false); };
+            });
+        }
+
+        // --- GOOGLE DRIVE & EMBEDDED SVG FALLBACK LOGO SYSTEM ---
+        const FALLBACK_LOGO_ONLY_SVG = "data:image/svg+xml;utf8," + encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+            <path d="M60 12L18 35L60 58L102 35L60 12Z" stroke="#d99b4e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="74" cy="24" r="4.5" fill="#d99b4e"/>
+            <circle cx="56" cy="36" r="4.5" fill="#d99b4e"/>
+            <circle cx="88" cy="33" r="4.5" fill="#d99b4e"/>
+            <path d="M56 36L74 24M68 41L77 35L84 39" stroke="#d99b4e" stroke-width="4" stroke-linecap="round"/>
+            <path d="M18 43V85L55 106V64L18 43Z" fill="#083b4c"/>
+            <path d="M102 43V85L65 106V64L102 43Z" fill="#0d5c75"/>
+        </svg>`);
+
+        const FALLBACK_LOGO_FULL_SVG = "data:image/svg+xml;utf8," + encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 120" fill="none">
+            <path d="M65 12L23 35L65 58L107 35L65 12Z" stroke="#d99b4e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="79" cy="24" r="4.5" fill="#d99b4e"/>
+            <circle cx="61" cy="36" r="4.5" fill="#d99b4e"/>
+            <circle cx="93" cy="33" r="4.5" fill="#d99b4e"/>
+            <path d="M61 36L79 24M73 41L82 35L89 39" stroke="#d99b4e" stroke-width="4" stroke-linecap="round"/>
+            <path d="M23 43V85L60 106V64L23 43Z" fill="#083b4c"/>
+            <path d="M107 43V85L70 106V64L107 43Z" fill="#0d5c75"/>
+            <text x="128" y="66" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="44" font-weight="800" fill="#0d4f66" letter-spacing="2">JIREH</text>
+            <text x="130" y="92" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="18" font-weight="600" fill="#0d4f66" letter-spacing="5.5">CREATIONS</text>
+        </svg>`);
+
+        // Konversi otomatis link Google Drive biasa menjadi Direct Image URL
+        function normalizeImageUrl(url) {
+            if (!url || typeof url !== 'string') return '';
+            const trimmed = url.trim();
+            if (!trimmed) return '';
+            if (trimmed.startsWith('data:image')) return trimmed;
+
+            // Perbaiki otomatis jika ada typo domain i.ibb.co.com -> i.ibb.co
+            let cleaned = trimmed.replace('https://i.ibb.co.com/', 'https://i.ibb.co/');
+
+            // Deteksi berbagai format link Google Drive:
+            const fileMatch = cleaned.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+            const idParamMatch = cleaned.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+            const lh3Match = cleaned.match(/googleusercontent\.com\/d\/([a-zA-Z0-9_-]+)/);
+
+            const driveFileId = (fileMatch && fileMatch[1]) || (idParamMatch && idParamMatch[1]) || (lh3Match && lh3Match[1]);
+            if (driveFileId) {
+                return `https://lh3.googleusercontent.com/d/${driveFileId}`;
+            }
+
+            return cleaned;
+        }
+
+        // Jika URL gambar gagal dimuat, otomatis ganti dengan SVG Jireh Creations
+        function handleLogoError(imgEl, type = 'only') {
+            if (!imgEl || imgEl.dataset.fallbackApplied === 'true') return;
+            imgEl.dataset.fallbackApplied = 'true';
+            imgEl.src = type === 'full' ? FALLBACK_LOGO_FULL_SVG : FALLBACK_LOGO_ONLY_SVG;
+        }
+
+        function getActiveLogoUrl(type = 'only') {
+            const savedOnly = normalizeImageUrl(localStorage.getItem('pos_logo_url'));
+            const savedFull = normalizeImageUrl(localStorage.getItem('pos_logo_full_url'));
+
+            if (type === 'full') {
+                return savedFull || savedOnly || FALLBACK_LOGO_FULL_SVG;
+            }
+            return savedOnly || savedFull || FALLBACK_LOGO_ONLY_SVG;
+        }
+
+        function applyAllBrandLogos() {
+            const logoOnlySrc = getActiveLogoUrl('only');
+            const logoFullSrc = getActiveLogoUrl('full');
+
+            document.querySelectorAll('img[data-brand-logo="only"]').forEach(img => {
+                delete img.dataset.fallbackApplied;
+                img.src = logoOnlySrc;
+            });
+
+            document.querySelectorAll('img[data-brand-logo="full"]').forEach(img => {
+                delete img.dataset.fallbackApplied;
+                img.src = logoFullSrc;
+            });
+
+            const favicon = document.getElementById('pageFavicon');
+            if (favicon) favicon.href = logoOnlySrc;
+        }
+
+        // Sinkronisasi pengaturan & logo dari Google Spreadsheet agar tampil sama di semua device (GitHub Pages)
+        async function syncSettingsFromServer() {
+            try {
+                const remoteSettings = await apiRequest('getAppSettings', null, { silent: true, suppressAlert: true });
+                if (remoteSettings && typeof remoteSettings === 'object') {
+                    if (remoteSettings.pos_logo_url !== undefined) {
+                        if (remoteSettings.pos_logo_url) localStorage.setItem('pos_logo_url', remoteSettings.pos_logo_url);
+                        else localStorage.removeItem('pos_logo_url');
+                    }
+                    if (remoteSettings.pos_logo_full_url !== undefined) {
+                        if (remoteSettings.pos_logo_full_url) localStorage.setItem('pos_logo_full_url', remoteSettings.pos_logo_full_url);
+                        else localStorage.removeItem('pos_logo_full_url');
+                    }
+                    if (remoteSettings.pos_paper_size) localStorage.setItem('pos_paper_size', remoteSettings.pos_paper_size);
+                    if (remoteSettings.pos_stock_threshold) localStorage.setItem('pos_stock_threshold', remoteSettings.pos_stock_threshold);
+                    if (remoteSettings.pos_expiry_threshold) localStorage.setItem('pos_expiry_threshold', remoteSettings.pos_expiry_threshold);
+                    loadSettings();
+                }
+            } catch (e) {
+                console.warn('Menggunakan pengaturan lokal (belum ada pengaturan di server).');
+            }
+        }
 
         // --- Date Display ---
         document.getElementById('currentDate').textContent = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -1576,19 +1715,31 @@ button:active{transform:translateY(1px)}
 
         // --- SETTINGS MANAGEMENT ---
         function loadSettings() {
-            const savedLogoUrl = localStorage.getItem('pos_logo_url');
+            const savedLogoUrl = normalizeImageUrl(localStorage.getItem('pos_logo_url'));
+            const savedLogoFullUrl = normalizeImageUrl(localStorage.getItem('pos_logo_full_url'));
             const savedPaperSize = localStorage.getItem('pos_paper_size');
             const savedStockThreshold = localStorage.getItem('pos_stock_threshold');
             const savedExpiryThreshold = localStorage.getItem('pos_expiry_threshold');
 
             if (savedLogoUrl) {
+                delete logoPreview.dataset.fallbackApplied;
                 logoPreview.src = savedLogoUrl;
                 logoPreview.classList.remove('hidden');
                 if(logoPlaceholder) logoPlaceholder.classList.add('hidden');
                 if (!savedLogoUrl.startsWith('data:')) {
                     logoUrlInput.value = savedLogoUrl;
                 }
+            } else {
+                delete logoPreview.dataset.fallbackApplied;
+                logoPreview.src = FALLBACK_LOGO_ONLY_SVG;
+                logoPreview.classList.remove('hidden');
+                if(logoPlaceholder) logoPlaceholder.classList.add('hidden');
             }
+
+            if (savedLogoFullUrl && logoFullUrlInput && !savedLogoFullUrl.startsWith('data:')) {
+                logoFullUrlInput.value = savedLogoFullUrl;
+            }
+
             if (savedPaperSize) {
                 paperSize.value = savedPaperSize;
             }
@@ -1599,58 +1750,87 @@ button:active{transform:translateY(1px)}
                 expiryThresholdInput.value = savedExpiryThreshold;
             }
 
+            applyAllBrandLogos();
             applyPrintStyles();
         }
 
         async function saveSettings() {
-            const logoUrlInputVal = logoUrlInput.value.trim();
+            const logoUrlInputVal = normalizeImageUrl(logoUrlInput.value);
+            const logoFullUrlInputVal = logoFullUrlInput ? normalizeImageUrl(logoFullUrlInput.value) : '';
             const currentSrc = logoPreview.src;
-            let logoUrlToSave = localStorage.getItem('pos_logo_url');
+            let logoUrlToSave = normalizeImageUrl(localStorage.getItem('pos_logo_url'));
             
-            if (logoUrlInputVal && currentSrc === logoUrlInputVal) {
-                 try {
+            if (logoUrlInputVal) {
+                try {
                     new URL(logoUrlInputVal);
                     logoUrlToSave = logoUrlInputVal;
+                    logoUrlInput.value = logoUrlInputVal;
                 } catch (_) {
-                    alert("URL Logo tidak valid.");
+                    showNotice("URL Logo tidak valid.");
                     return;
                 }
-            } else if (currentSrc.startsWith('data:image')) {
-                const fileData = currentSrc;
-                const result = await apiRequest('uploadLogo', { fileData: fileData, fileType: 'image/png' });
-
-                if (result && result.success) {
-                    logoUrlToSave = result.url;
-                    logoPreview.src = logoUrlToSave; 
-                } else {
-                    alert("Gagal mengupload logo ke Google Drive. Pengaturan logo tidak disimpan.");
-                    return;
+            } else if (currentSrc.startsWith('data:image') && !currentSrc.startsWith('data:image/svg+xml')) {
+                try {
+                    const fileData = currentSrc;
+                    const result = await apiRequest('uploadLogo', { fileData: fileData, fileType: 'image/png' });
+                    if (result && result.success) {
+                        logoUrlToSave = normalizeImageUrl(result.url);
+                        logoPreview.src = logoUrlToSave;
+                        logoUrlInput.value = logoUrlToSave;
+                    } else {
+                        logoUrlToSave = currentSrc;
+                    }
+                } catch (err) {
+                    logoUrlToSave = currentSrc;
                 }
-            } else if (logoUrlInputVal === '' && currentSrc.startsWith('http') && !currentSrc.includes('googleusercontent')) {
-                if (logoPreview.classList.contains('hidden')) {
-                    logoUrlToSave = '';
-                }
+            } else if (logoUrlInput.value.trim() === '') {
+                logoUrlToSave = '';
             }
             
             if (logoUrlToSave) {
                 localStorage.setItem('pos_logo_url', logoUrlToSave);
-            } else if (logoPreview.classList.contains('hidden')) {
+            } else {
                 localStorage.removeItem('pos_logo_url');
+            }
+
+            if (logoFullUrlInputVal) {
+                localStorage.setItem('pos_logo_full_url', logoFullUrlInputVal);
+                if (logoFullUrlInput) logoFullUrlInput.value = logoFullUrlInputVal;
+            } else if (logoFullUrlInput && logoFullUrlInput.value.trim() === '') {
+                localStorage.removeItem('pos_logo_full_url');
             }
             
             localStorage.setItem('pos_paper_size', paperSize.value);
             localStorage.setItem('pos_stock_threshold', stockThresholdInput.value);
             localStorage.setItem('pos_expiry_threshold', expiryThresholdInput.value);
+
+            // Simpan ke Google Spreadsheet agar otomatis terupdate di GitHub Pages pada semua perangkat/browser lain
+            try {
+                await apiRequest('saveAppSettings', {
+                    settings: {
+                        pos_logo_url: logoUrlToSave || '',
+                        pos_logo_full_url: logoFullUrlInputVal || '',
+                        pos_paper_size: paperSize.value,
+                        pos_stock_threshold: stockThresholdInput.value,
+                        pos_expiry_threshold: expiryThresholdInput.value
+                    }
+                });
+            } catch (err) {
+                console.warn('Gagal menyinkronkan pengaturan ke server, tersimpan di browser lokal.', err);
+            }
+
+            applyAllBrandLogos();
             applyPrintStyles();
-            alert("Pengaturan telah disimpan!");
+            showNotice("Pengaturan dan Logo berhasil disimpan!");
             loadDashboardData(); 
         }
 
         function handleLogoUpload(event) {
             const file = event.target.files[0];
-            if (file && file.type === "image/png") {
+            if (file && file.type.startsWith("image/")) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
+                    delete logoPreview.dataset.fallbackApplied;
                     logoPreview.src = e.target.result;
                     logoPreview.classList.remove('hidden');
                     if(logoPlaceholder) logoPlaceholder.classList.add('hidden');
@@ -1658,20 +1838,22 @@ button:active{transform:translateY(1px)}
                 }
                 reader.readAsDataURL(file);
             } else {
-                alert("Harap pilih file dengan format PNG.");
+                showNotice("Harap pilih file gambar (PNG/JPG).");
             }
         }
 
         logoUrlInput.addEventListener('input', (e) => {
-            const url = e.target.value.trim();
+            const url = normalizeImageUrl(e.target.value);
             if (url) {
+                delete logoPreview.dataset.fallbackApplied;
                 logoPreview.src = url;
                 logoPreview.classList.remove('hidden');
                 if(logoPlaceholder) logoPlaceholder.classList.add('hidden');
                 logoUpload.value = '';
             } else {
-                logoPreview.classList.add('hidden');
-                if(logoPlaceholder) logoPlaceholder.classList.remove('hidden');
+                delete logoPreview.dataset.fallbackApplied;
+                logoPreview.src = FALLBACK_LOGO_ONLY_SVG;
+                logoPreview.classList.remove('hidden');
             }
         });
 
@@ -1749,26 +1931,24 @@ button:active{transform:translateY(1px)}
                     const index = categories.findIndex(c => c.toLowerCase() === catToDelete.toLowerCase());
                     if(index > -1) {
                         categories.splice(index, 1);
-                        alert(`Jenis barang '${catToDelete}' telah dihapus.`);
+                        showNotice(`Jenis barang '${catToDelete}' telah dihapus.`);
                         saveCategories();
                     } else {
-                        alert(`Jenis barang '${catToDelete}' tidak ditemukan.`);
+                        showNotice(`Jenis barang '${catToDelete}' tidak ditemukan.`);
                     }
                 } else {
                     if (!categories.find(c => c.toLowerCase() === newCategory.toLowerCase())) {
                         categories.push(newCategory);
-                        alert(`Jenis barang '${newCategory}' telah ditambahkan.`);
+                        showNotice(`Jenis barang '${newCategory}' telah ditambahkan.`);
                         saveCategories();
                     } else {
-                        alert('Jenis barang tersebut sudah ada.');
+                        showNotice('Jenis barang tersebut sudah ada.');
                     }
                 }
             }
         }
 
         // --- Utility Functions ---
-        // Loader ditunda sedikit supaya request cepat tidak menimbulkan kedipan overlay.
-        // Counter menjaga loader tetap benar bila ada lebih dari satu request bersamaan.
         const showLoader = () => {
             loaderRequestCount++;
             if (loaderRequestCount === 1) {
@@ -1798,7 +1978,7 @@ button:active{transform:translateY(1px)}
         // --- API Communication ---
         async function apiRequest(action, data = null, requestOptions = {}) {
             if (SCRIPT_URL === "MASUKKAN_URL_BARU_ANDA_DI_SINI" || SCRIPT_URL === "") {
-                alert("PENTING: Harap masukkan URL Google Apps Script Anda di variabel SCRIPT_URL.");
+                showNotice("PENTING: Harap masukkan URL Google Apps Script Anda di variabel SCRIPT_URL.");
                 return null;
             }
 
@@ -1850,8 +2030,8 @@ button:active{transform:translateY(1px)}
                     ? new Error('Koneksi ke server terlalu lama (timeout). Silakan coba lagi.')
                     : error;
                 console.error('API Request Error:', normalizedError);
-                if (!suppressAlert && action !== 'getRabHistory') {
-                    alert(`Terjadi kesalahan: ${normalizedError.message}. Periksa konsol untuk detail.`);
+                if (!suppressAlert && action !== 'getRabHistory' && action !== 'getAppSettings') {
+                    showNotice(`Terjadi kesalahan: ${normalizedError.message}. Periksa konsol untuk detail.`);
                 }
                 throw normalizedError;
             } finally {
@@ -1948,58 +2128,17 @@ button:active{transform:translateY(1px)}
         async function loadDashboardData(forceRefresh = false) {
             showView('dashboard');
 
-            // Jika cache dashboard masih baru, tampilkan langsung tanpa komunikasi server.
             if (!forceRefresh && lastDashboardData && isFresh(dashboardLoadedAt)) {
                 renderDashboardPayload(lastDashboardData);
                 return;
             }
 
             try {
-                // HANYA 1 REQUEST. Endpoint ini sekarang mengembalikan ringkasan + inventory.
                 const dashboardData = await apiRequest('getDashboardData');
                 if (dashboardData) renderDashboardPayload(dashboardData);
             } catch(e) {
                 console.warn('Dashboard gagal memuat data server.', e);
             }
-        }
-
-        function calculatePeriodSales(sales) {
-            const now = new Date();
-            const currentYear = now.getFullYear();
-            const currentMonth = now.getMonth();
-            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            
-            const d = new Date(now);
-            const day = d.getDay() || 7; 
-            if (day !== 1) d.setHours(-24 * (day - 1));
-            d.setHours(0,0,0,0);
-            const startOfWeek = d;
-
-            let totalToday = 0;
-            let totalWeek = 0;
-            let totalMonth = 0;
-            let totalYear = 0;
-
-            sales.forEach(sale => {
-                const saleDate = new Date(sale.tanggal);
-                const saleDateOnly = new Date(saleDate.getFullYear(), saleDate.getMonth(), saleDate.getDate());
-                const saleAmount = parseFloat(sale.total);
-
-                if (saleDate.getFullYear() === currentYear) {
-                    totalYear += saleAmount;
-                    if (saleDate.getMonth() === currentMonth) {
-                        totalMonth += saleAmount;
-                    }
-                }
-                if (saleDateOnly >= startOfWeek) {
-                    totalWeek += saleAmount;
-                }
-                if (saleDateOnly.getTime() === today.getTime()) {
-                    totalToday += saleAmount;
-                }
-            });
-
-            return { totalToday, totalWeek, totalMonth, totalYear };
         }
 
         function renderNotifications(lowStockItems, expiringItems) {
@@ -2105,7 +2244,6 @@ button:active{transform:translateY(1px)}
         async function loadInventory(forceRefresh = false) {
             const hasCache = Array.isArray(fullInventoryData) && fullInventoryData.length > 0;
 
-            // Tampilkan cache seketika.
             if (hasCache) {
                 renderInventoryTable();
                 populateCategoryDropdowns();
@@ -2214,11 +2352,11 @@ button:active{transform:translateY(1px)}
             if (modalTitle === 'Edit Barang' && originalCode !== item.kode_barang) {
                 const exists = fullInventoryData.find(i => i.kode_barang === item.kode_barang);
                 if (exists) {
-                    alert(`Gagal: ID Baru "${item.kode_barang}" sudah digunakan oleh barang lain.`);
+                    showNotice(`Gagal: ID Baru "${item.kode_barang}" sudah digunakan oleh barang lain.`);
                     return;
                 }
 
-                if (!confirm(`Anda mengubah ID Barang dari "${originalCode}" menjadi "${item.kode_barang}".\n\nSistem akan menghapus data lama dan membuat data baru. Lanjutkan?`)) {
+                if (!(await askConfirmation(`Anda mengubah ID Barang dari "${originalCode}" menjadi "${item.kode_barang}".\n\nSistem akan menghapus data lama dan membuat data baru. Lanjutkan?`))) {
                     return;
                 }
 
@@ -2232,10 +2370,10 @@ button:active{transform:translateY(1px)}
                         document.getElementById('inventoryModal').classList.add('hidden');
                         invalidateInventoryCache();
                         loadInventory(true);
-                        alert("ID Barang berhasil diperbarui!");
+                        showNotice("ID Barang berhasil diperbarui!");
                     }
                 } catch (error) {
-                    alert("Terjadi kesalahan saat memperbarui ID: " + error.message);
+                    showNotice("Terjadi kesalahan saat memperbarui ID: " + error.message);
                     invalidateInventoryCache();
                     loadInventory(true); 
                 } finally {
@@ -2259,7 +2397,6 @@ button:active{transform:translateY(1px)}
         async function loadPosData(forceRefresh = false) {
             const hasCache = Array.isArray(fullInventoryData) && fullInventoryData.length > 0;
 
-            // Inventory dari dashboard dipakai langsung sehingga POS bisa terbuka instan.
             if (hasCache) {
                 renderPosOptions();
                 if (!forceRefresh && isFresh(inventoryLoadedAt)) return;
@@ -2305,12 +2442,12 @@ button:active{transform:translateY(1px)}
             
             if (existingItem) { 
                 if(existingItem.qty + quantityToAdd > maxStock) { 
-                    alert(`Stok tidak mencukupi. Anda sudah punya ${existingItem.qty} di keranjang. Stok tersisa: ${maxStock}`); return; 
+                    showNotice(`Stok tidak mencukupi. Anda sudah punya ${existingItem.qty} di keranjang. Stok tersisa: ${maxStock}`); return; 
                 } 
                 existingItem.qty += quantityToAdd; 
             } else { 
                 if(quantityToAdd > maxStock) {
-                     alert(`Stok tidak mencukupi. Stok tersisa: ${maxStock}`); return;
+                     showNotice(`Stok tidak mencukupi. Stok tersisa: ${maxStock}`); return;
                 }
                 cart.push({
                     kode_barang: item.kode_barang,
@@ -2328,7 +2465,7 @@ button:active{transform:translateY(1px)}
             const selectedOption = posItemSelect.options[posItemSelect.selectedIndex];
             
             if (!selectedOption || !selectedOption.value) {
-                alert("Silakan pilih barang terlebih dahulu dari daftar.");
+                showNotice("Silakan pilih barang terlebih dahulu dari daftar.");
                 return;
             }
             
@@ -2403,8 +2540,6 @@ button:active{transform:translateY(1px)}
             const pph21Applied = !!document.getElementById('pph21Checkbox')?.checked;
             const pph21Meta = pph21Applied ? calculatePph21(total) : null;
 
-            // Field asli `items` dan `total` TETAP dipertahankan untuk kompatibilitas database yang ada.
-            // Metadata PPh ditambahkan sebagai field opsional sehingga backend lama tetap dapat memakai payload lama.
             const saleData = {
                 items: cart,
                 total: total,
@@ -2422,8 +2557,6 @@ button:active{transform:translateY(1px)}
                     if (pph21Meta) saveTransactionPph21Meta(result.transactionId, pph21Meta);
                     showInvoice(result.transactionId, new Date(), cart, total, pph21Meta);
 
-                    // Backend mengembalikan stok terbaru. Patch cache lokal agar POS tidak perlu
-                    // melakukan request getInventory lagi setelah checkout.
                     if (Array.isArray(result.updatedStocks)) {
                         result.updatedStocks.forEach(update => {
                             const invItem = fullInventoryData.find(item => String(item.kode_barang) === String(update.kode_barang));
@@ -2447,15 +2580,10 @@ button:active{transform:translateY(1px)}
         };
 
         function showInvoice(id, date, items, total, pph21Meta = null) {
-            const savedLogoUrl = localStorage.getItem('pos_logo_url');
             const invoiceLogo = document.getElementById('invoiceLogo');
-            if(savedLogoUrl) {
-                invoiceLogo.src = savedLogoUrl;
-                invoiceLogo.classList.remove('hidden');
-            } else {
-                invoiceLogo.src = 'https://i.ibb.co.com/3mssnrM1/Salinan-dari-Logo-Jireh-Creations-logo-only.png';
-                invoiceLogo.classList.remove('hidden');
-            }
+            delete invoiceLogo.dataset.fallbackApplied;
+            invoiceLogo.src = getActiveLogoUrl('only');
+            invoiceLogo.classList.remove('hidden');
 
             document.getElementById('invoiceId').textContent = id;
             document.getElementById('invoiceDate').textContent = date.toLocaleDateString('id-ID');
@@ -2580,16 +2708,16 @@ button:active{transform:translateY(1px)}
                     pph21Meta.paymentTotal = total - (Number(pph21Meta.pphAmount) || Math.round(total * PPH21_RATE));
                 }
                 showInvoice(transactionId, date, itemsForInvoice, total, pph21Meta);
-            } else { alert('ID Transaksi tidak ditemukan.'); }
+            } else { showNotice('ID Transaksi tidak ditemukan.'); }
         };
 
         const handleDeleteTransaction = async (transactionId) => {
-            if (confirm(`Apakah Anda yakin ingin menghapus transaksi dengan ID: ${transactionId}?`)) {
+            if (await askConfirmation(`Apakah Anda yakin ingin menghapus transaksi dengan ID: ${transactionId}?`)) {
                 try {
                     const result = await apiRequest('deleteTransaction', { transactionId });
                     if (result && result.success) {
                         removeTransactionPph21Meta(transactionId);
-                        alert('Transaksi berhasil dihapus.');
+                        showNotice('Transaksi berhasil dihapus.');
                         invalidateSalesCache();
                         loadSalesHistory(true);
                     }
@@ -2609,7 +2737,7 @@ button:active{transform:translateY(1px)}
                     const wb = XLSX.utils.book_new();
                     XLSX.utils.book_append_sheet(wb, ws, "Inventory");
                     XLSX.writeFile(wb, "Data_Barang.xlsx");
-                } else { alert("Tidak ada data barang untuk diexport."); }
+                } else { showNotice("Tidak ada data barang untuk diexport."); }
             } catch(e) {}
         };
 
@@ -2620,7 +2748,7 @@ button:active{transform:translateY(1px)}
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "Penjualan");
                 XLSX.writeFile(wb, "Data_Penjualan.xlsx");
-            } else { alert("Tidak ada data penjualan untuk diexport."); }
+            } else { showNotice("Tidak ada data penjualan untuk diexport."); }
         };
 
         // --- RAB LOGIC ---
@@ -2651,15 +2779,12 @@ button:active{transform:translateY(1px)}
             
             renderRabTable();
 
-            // AMBIL DATA DARI DATABASE (Tahan jika error agar aplikasi tetap jalan pakai cache lokal)
             try {
                 const dbHistory = await apiRequest('getRabHistory');
                 if (dbHistory && Array.isArray(dbHistory)) {
                     rabHistory = dbHistory;
-                    // Sinkronkan ke local storage sebagai cache
                     localStorage.setItem('pos_rab_history', JSON.stringify(rabHistory));
                 } else {
-                    // Fallback jika API mengembalikan data kosong atau null
                     rabHistory = JSON.parse(localStorage.getItem('pos_rab_history')) || [];
                 }
             } catch (err) {
@@ -2705,7 +2830,6 @@ button:active{transform:translateY(1px)}
             renderRabTable();
         }
 
-        // Generate Print Preview for RAB
         function showRabPrintPreview(rabData) {
             document.getElementById('printRabTitle').textContent = rabData.title;
             document.getElementById('printRabNumber').textContent = rabData.number;
@@ -2731,10 +2855,9 @@ button:active{transform:translateY(1px)}
             document.getElementById('rabPrintModal').classList.remove('hidden');
         }
 
-        // --- AUTO INVOICE FROM RAB ---
         function createInvoiceFromRab(rabData) {
             if (!rabData || !Array.isArray(rabData.items) || rabData.items.length === 0) {
-                alert('RAB belum memiliki item untuk dibuat menjadi invoice.');
+                showNotice('RAB belum memiliki item untuk dibuat menjadi invoice.');
                 return;
             }
 
@@ -2748,8 +2871,6 @@ button:active{transform:translateY(1px)}
             const cleanRabNumber = String(rabData.number || generateRabNumber()).replace(/^RAB-/i, '');
             const invoiceId = `INV-RAB-${cleanRabNumber}`;
 
-            // Invoice hasil konversi RAB tidak otomatis mencatat penjualan / mengurangi stok.
-            // Ini hanya membuat invoice siap cetak dari data RAB yang sudah tersimpan.
             showInvoice(invoiceId, new Date(), invoiceItems, invoiceTotal, null);
         }
 
@@ -2765,7 +2886,6 @@ button:active{transform:translateY(1px)}
             };
         }
 
-        // Render History Table for RAB
         function renderRabHistoryTable() {
             const tbody = document.getElementById('rabHistoryTableBody');
             tbody.innerHTML = '';
@@ -2775,7 +2895,6 @@ button:active{transform:translateY(1px)}
                 return;
             }
 
-            // Copy and reverse to show newest on top
             [...rabHistory].reverse().forEach(rab => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition border-b border-slate-100 last:border-0";
@@ -2803,6 +2922,7 @@ button:active{transform:translateY(1px)}
             checkAuth();
             loadCategories();
             loadSettings();
+            syncSettingsFromServer();
             if(window.lucide) lucide.createIcons();
         });
         
@@ -2830,7 +2950,6 @@ button:active{transform:translateY(1px)}
         inventorySearch.addEventListener('input', renderInventoryTable);
         inventoryFilter.addEventListener('change', renderInventoryTable);
         
-        // POS Search Logic
         posSearch.addEventListener('input', renderPosOptions);
         posSearch.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
@@ -2857,19 +2976,18 @@ button:active{transform:translateY(1px)}
         const testConnectionBtn = document.getElementById('testConnectionBtn');
         async function handleTestConnection() {
             if (SCRIPT_URL === "MASUKKAN_URL_BARU_ANDA_DI_SINI" || SCRIPT_URL === "") {
-                alert("Anda belum memasukkan URL Web App. Harap perbarui variabel SCRIPT_URL di file index.html terlebih dahulu.");
+                showNotice("Anda belum memasukkan URL Web App. Harap perbarui variabel SCRIPT_URL di file index.html terlebih dahulu.");
                 return;
             }
-            alert("Mencoba koneksi ke Google Apps Script...");
             try {
                 const result = await apiRequest('testConnection');
                 if (result && result.message) {
-                    alert(`BERHASIL!\n\nServer merespon: "${result.message}"\n\nKoneksi Anda sudah benar. Sekarang silakan coba login.`);
+                    showNotice(`BERHASIL!\n\nServer merespon: "${result.message}"\n\nKoneksi Anda sudah benar. Sekarang silakan coba login.`);
                 } else {
-                    alert("TES KONEKSI GAGAL.\n\nPeriksa kembali langkah-langkah setup, terutama:\n1. URL SCRIPT_URL sudah yang terbaru.\n2. Izin akses deployment adalah 'Anyone'.\n3. ID Spreadsheet di file Code.gs sudah benar.");
+                    showNotice("TES KONEKSI GAGAL.\n\nPeriksa kembali langkah-langkah setup, terutama:\n1. URL SCRIPT_URL sudah yang terbaru.\n2. Izin akses deployment adalah 'Anyone'.\n3. ID Spreadsheet di file Code.gs sudah benar.");
                 }
             } catch(e) {
-                 alert("TES KONEKSI GAGAL.\n\nError: " + e.message);
+                 showNotice("TES KONEKSI GAGAL.\n\nError: " + e.message);
             }
         }
         testConnectionBtn.addEventListener('click', handleTestConnection);
@@ -2887,7 +3005,7 @@ button:active{transform:translateY(1px)}
                 if (item) openInventoryModal(item);
             }
             if (btn.classList.contains('delete-btn')) {
-                if (confirm('Apakah Anda yakin ingin menghapus barang ini?')) { 
+                if (await askConfirmation('Apakah Anda yakin ingin menghapus barang ini?')) { 
                     try {
                         const result = await apiRequest('deleteInventory', { kode_barang: code });
                         if (result) { invalidateInventoryCache(); loadInventory(true); } 
@@ -2932,10 +3050,9 @@ button:active{transform:translateY(1px)}
             }
         });
 
-        // Button Buat Baru RAB
-        document.getElementById('newRabBtn').addEventListener('click', () => {
+        document.getElementById('newRabBtn').addEventListener('click', async () => {
             if(rabCart.length > 0) {
-                if(!confirm("Anda yakin ingin membuat dokumen baru? Isian saat ini akan dibersihkan.")) return;
+                if(!(await askConfirmation("Anda yakin ingin membuat dokumen baru? Isian saat ini akan dibersihkan."))) return;
             }
             rabCart = [];
             document.getElementById('rabTitle').value = '';
@@ -2943,9 +3060,8 @@ button:active{transform:translateY(1px)}
             renderRabTable();
         });
 
-        // Preview & Download Main Button in RAB Form
         document.getElementById('printRabBtnTop').addEventListener('click', async () => {
-            if(rabCart.length === 0) { alert('Tambahkan minimal 1 item ke RAB sebelum melihat preview.'); return; }
+            if(rabCart.length === 0) { showNotice('Tambahkan minimal 1 item ke RAB sebelum melihat preview.'); return; }
             
             const title = document.getElementById('rabTitle').value || 'Dokumen Rencana Anggaran Biaya';
             const number = document.getElementById('rabNumber').value;
@@ -2953,23 +3069,20 @@ button:active{transform:translateY(1px)}
             
             let grandTotal = rabCart.reduce((sum, item) => sum + item.total, 0);
 
-            // Create RAB Object
             const rabData = {
                 number: number,
                 title: title,
                 date: dateStr,
-                items: [...rabCart], // clone array
+                items: [...rabCart],
                 total: grandTotal
             };
 
-            // SIMPAN KE DATABASE (Tahan error agar tetap bisa jalan menggunakan memori lokal)
             try {
                 await apiRequest('saveRab', rabData);
             } catch (err) {
                 console.warn('Gagal menyimpan ke database server. Tetap menyimpan ke memori lokal.', err);
             }
 
-            // Update or push to History
             const existingIndex = rabHistory.findIndex(r => r.number === number);
             if (existingIndex > -1) {
                 rabHistory[existingIndex] = rabData;
@@ -2977,25 +3090,21 @@ button:active{transform:translateY(1px)}
                 rabHistory.push(rabData);
             }
             
-            // Save localstorage as fallback/cache
             localStorage.setItem('pos_rab_history', JSON.stringify(rabHistory));
             renderRabHistoryTable();
 
-            // Show Print Preview
             showRabPrintPreview(rabData);
         });
 
-        // Buat invoice langsung dari RAB yang sedang disusun
         document.getElementById('createRabInvoiceBtnTop').addEventListener('click', () => {
             const rabData = getCurrentRabDataForInvoice();
             if (!rabData) {
-                alert('Tambahkan minimal 1 item ke RAB sebelum membuat invoice.');
+                showNotice('Tambahkan minimal 1 item ke RAB sebelum membuat invoice.');
                 return;
             }
             createInvoiceFromRab(rabData);
         });
 
-        // History RAB Table Event Listeners
         document.getElementById('rabHistoryTableBody').addEventListener('click', async (e) => {
             const btn = e.target.closest('button');
             if(!btn) return;
@@ -3011,8 +3120,7 @@ button:active{transform:translateY(1px)}
                 if (rab) showRabPrintPreview(rab);
             }
             if (btn.classList.contains('delete-rab-btn')) {
-                if (confirm(`Apakah Anda yakin ingin menghapus Histori RAB: ${number}?`)) {
-                    // HAPUS DARI DATABASE (Tahan error agar tidak freeze)
+                if (await askConfirmation(`Apakah Anda yakin ingin menghapus Histori RAB: ${number}?`)) {
                     try {
                         await apiRequest('deleteRab', { number: number });
                     } catch (err) {
@@ -3034,30 +3142,27 @@ button:active{transform:translateY(1px)}
             const btn = document.getElementById('triggerPrintRabBtn');
             const originalHTML = btn.innerHTML;
             
-            // Update button text to show processing state
             btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Memproses PDF...';
             if(window.lucide) lucide.createIcons();
 
-            // Setup proper configuration to avoid breaking elements across pages
             const opt = {
-                margin:       [5, 0, 15, 0], // Margin atas diturunkan jadi 5mm agar sambungan halaman dan margin rapi
+                margin:       [5, 0, 15, 0],
                 filename:     `RAB_${rabNumber}.pdf`,
                 image:        { type: 'jpeg', quality: 1 },
                 html2canvas:  { scale: 2, useCORS: true, letterRendering: true, scrollY: 0 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak:    { mode: ['css', 'legacy'], avoid: ['tr', 'thead', 'tfoot', '.avoid-break'] } // Mencegah tr, header, dan tanda tangan terpotong
+                pagebreak:    { mode: ['css', 'legacy'], avoid: ['tr', 'thead', 'tfoot', '.avoid-break'] }
             };
 
             html2pdf().set(opt).from(element).save().then(() => {
-                btn.innerHTML = originalHTML; // revert text
+                btn.innerHTML = originalHTML;
                 if(window.lucide) lucide.createIcons();
             });
         });
 
         document.getElementById('closeRabPrintBtn').addEventListener('click', () => document.getElementById('rabPrintModal').classList.add('hidden'));
 
-
-        // INVOICE PRINT LOGIC (Tetap cetak langsung ke printer kasir)
+        // INVOICE PRINT LOGIC
         document.getElementById('closeInvoiceBtn').addEventListener('click', () => document.getElementById('invoiceModal').classList.add('hidden'));
         document.getElementById('printInvoiceBtn').addEventListener('click', () => {
             const originalTitle = document.title;
@@ -3076,7 +3181,7 @@ button:active{transform:translateY(1px)}
         });
         document.getElementById('reprintBtn').addEventListener('click', () => {
             const id = document.getElementById('reprintId').value;
-            if(id) handleViewInvoice(id.trim()); else alert('Silakan masukkan ID Transaksi.');
+            if(id) handleViewInvoice(id.trim()); else showNotice('Silakan masukkan ID Transaksi.');
         });
         
         document.getElementById('exportInventoryBtn').addEventListener('click', handleExportInventory);
